@@ -1,8 +1,14 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Owin;
 using Owin;
 using SJIP_LIMMV1.Models;
+using SJIP_LIMMV1.Services;
 
 [assembly: OwinStartupAttribute(typeof(SJIP_LIMMV1.Startup))]
 namespace SJIP_LIMMV1
@@ -12,7 +18,20 @@ namespace SJIP_LIMMV1
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
-            createRolesandUsers();
+            createRolesandUsers();            
+        }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSingleton<IEmailSender, EmailSender>();
         }
 
         //TO-DO : Refactor this once helper methods for configs reaches a certain amount
