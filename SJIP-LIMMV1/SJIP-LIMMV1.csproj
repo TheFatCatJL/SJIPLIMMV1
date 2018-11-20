@@ -49,6 +49,8 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -211,12 +213,15 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
+    <Compile Include="Controllers\BoxInfoController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helper\CommonFunc.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\BoxInfoViewModels.cs" />
+    <Compile Include="Models\BoxInfoContext.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -266,6 +271,7 @@
     <Content Include="Content\sass\libs\_vars.scss" />
     <Content Include="Content\sass\libs\_vendor.scss" />
     <Content Include="Content\sass\main.scss" />
+    <Content Include="ClassDiagram1.cd" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -328,6 +334,7 @@
     <Content Include="Scripts\sass\libs\_vendor.scss" />
     <Content Include="Scripts\sass\main.scss" />
     <Content Include="Views\Shared\_LayoutPrologue.cshtml" />
+    <Content Include="Views\BoxInfo\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -340,6 +347,9 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
