@@ -57,20 +57,21 @@ namespace SJIP_LIMMV1.Controllers
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
-                : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
+                //: message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
                 : message == ManageMessageId.Error ? "An error has occurred."
-                : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
-                : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+                //: message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
+                //: message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
-
+            ViewBag.UserRole = UserManager.GetRoles(User.Identity.GetUserId()).FirstOrDefault().ToString();
+            ViewBag.UserName = User.Identity.GetUserName();
             var userId = User.Identity.GetUserId();
             var model = new IndexViewModel
             {
                 HasPassword = HasPassword(),
-                PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
-                TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
-                Logins = await UserManager.GetLoginsAsync(userId),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
+                //PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
+                //TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
+                Logins = await UserManager.GetLoginsAsync(userId)
+                //BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
             };
             return View(model);
         }
@@ -101,6 +102,7 @@ namespace SJIP_LIMMV1.Controllers
 
         //
         // GET: /Manage/AddPhoneNumber
+        [ChildActionOnly]
         public ActionResult AddPhoneNumber()
         {
             return View();
@@ -109,6 +111,7 @@ namespace SJIP_LIMMV1.Controllers
         //
         // POST: /Manage/AddPhoneNumber
         [HttpPost]
+        [ChildActionOnly]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> AddPhoneNumber(AddPhoneNumberViewModel model)
         {
@@ -133,6 +136,7 @@ namespace SJIP_LIMMV1.Controllers
         //
         // POST: /Manage/EnableTwoFactorAuthentication
         [HttpPost]
+        [ChildActionOnly]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EnableTwoFactorAuthentication()
         {
@@ -148,6 +152,7 @@ namespace SJIP_LIMMV1.Controllers
         //
         // POST: /Manage/DisableTwoFactorAuthentication
         [HttpPost]
+        [ChildActionOnly]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DisableTwoFactorAuthentication()
         {
@@ -172,6 +177,7 @@ namespace SJIP_LIMMV1.Controllers
         //
         // POST: /Manage/VerifyPhoneNumber
         [HttpPost]
+        [ChildActionOnly]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> VerifyPhoneNumber(VerifyPhoneNumberViewModel model)
         {
@@ -197,6 +203,7 @@ namespace SJIP_LIMMV1.Controllers
         //
         // POST: /Manage/RemovePhoneNumber
         [HttpPost]
+        [ChildActionOnly]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> RemovePhoneNumber()
         {
@@ -302,6 +309,7 @@ namespace SJIP_LIMMV1.Controllers
         //
         // POST: /Manage/LinkLogin
         [HttpPost]
+        [ChildActionOnly]
         [ValidateAntiForgeryToken]
         public ActionResult LinkLogin(string provider)
         {
@@ -311,6 +319,7 @@ namespace SJIP_LIMMV1.Controllers
 
         //
         // GET: /Manage/LinkLoginCallback
+        [ChildActionOnly]
         public async Task<ActionResult> LinkLoginCallback()
         {
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId());

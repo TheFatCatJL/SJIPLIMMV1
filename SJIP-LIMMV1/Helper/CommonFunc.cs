@@ -31,5 +31,32 @@ namespace SJIP_LIMMV1.Helper
                 return false;
             }
         }
+
+        public string generateGreeting()
+        {
+            Random random = new Random();
+            int rand = random.Next(1,10);
+            switch (rand)
+            {
+                case 1:
+                    return "Going Up..";
+                case 2:
+                    return "Going Down..";
+                case 3:
+                    return "Lift doors closing..";
+                case 4:
+                    return "Have a nice day!";
+                case 5:
+                    return "Sorry, restricted floor.";
+                case 6:
+                    return "Pool & Gym deck";
+                case 7:
+                    return "Basement Carpark";
+                case 8:
+                    return "Guest Lobby";
+                default:
+                    return "Please choose access floor";
+            }
+        }
     }
 }
