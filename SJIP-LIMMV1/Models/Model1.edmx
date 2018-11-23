@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="LiftInstallationDataDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="SensorBoxInfo">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TownCouncil" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="BlockNo" Type="int" Nullable="false" />
+          <Property Name="LiftNo" Type="varchar" MaxLength="40" />
+          <Property Name="PostalCode" Type="int" />
+          <Property Name="SIMCard" Type="varchar" MaxLength="40" />
+          <Property Name="LMPD" Type="varchar" MaxLength="40" />
+        </EntityType>
+        <EntityContainer Name="LiftInstallationDataDBModelStoreContainer">
+          <EntitySet Name="SensorBoxInfo" EntityType="Self.SensorBoxInfo" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="LiftInstallationDataDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="SensorBoxInfo">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TownCouncil" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="BlockNo" Type="Int32" Nullable="false" />
+          <Property Name="LiftNo" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="PostalCode" Type="Int32" />
+          <Property Name="SIMCard" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="LMPD" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityContainer Name="LiftInstallationDataDBEntities1" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="SensorBoxInfoes" EntityType="Self.SensorBoxInfo" />
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="LiftInstallationDataDBModelStoreContainer" CdmEntityContainer="LiftInstallationDataDBEntities1">
+          <EntitySetMapping Name="SensorBoxInfoes">
+            <EntityTypeMapping TypeName="LiftInstallationDataDBModel.SensorBoxInfo">
+              <MappingFragment StoreEntitySet="SensorBoxInfo">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="TownCouncil" ColumnName="TownCouncil" />
+                <ScalarProperty Name="BlockNo" ColumnName="BlockNo" />
+                <ScalarProperty Name="LiftNo" ColumnName="LiftNo" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="SIMCard" ColumnName="SIMCard" />
+                <ScalarProperty Name="LMPD" ColumnName="LMPD" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
