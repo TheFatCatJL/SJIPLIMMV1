@@ -5,7 +5,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
+<style>
+    .validationError{
+        color:red;
+    }
+</style>
 
 
 
@@ -23,67 +27,85 @@
                 <h1>Search Info</h1>
             </div>
 
+            <form id="myForm">
+                <div class="col-sm-12">
 
-            <div class="col-sm-12">
+                    <div class="col-sm-6" style="padding-top:10px;">
 
-                <div class="col-sm-6" style="padding-top:10px;">
+                        <div class="col-sm-12">
 
-                    <div class="col-sm-12">
-
-                        <div class="col-sm-3" style="padding-top:15px;">
-                            @Html.LabelFor(x => x.TownCouncil)
+                            <div class="col-sm-3" style="padding-top:15px;">
+                                @Html.LabelFor(x => x.TownCouncil)
+                            </div>
+                            <div class="col-sm-9" style="padding-top:5px;">
+                                @Html.TextBoxFor(x => x.TownCouncil)
+                            </div>
                         </div>
-                        <div class="col-sm-9" id="townCouncil" style="padding-top:5px;">
-                            @Html.TextBoxFor(x => x.TownCouncil)
+
+                        <div class="col-sm-12" >
+                            @Html.ValidationMessageFor(x => x.TownCouncil,"",new {@class="validationError"})
                         </div>
-                        @Html.ValidationMessageFor(x => x.TownCouncil)
+
+                        <div class="col-sm-12">
+
+                            <div class="col-sm-3" style="padding-top:15px;">
+                                @Html.LabelFor(x => x.Block)
+                            </div>
+                            <div class="col-sm-9" style="padding-top:5px;">
+                                @Html.TextBoxFor(x => x.Block)
+                            </div>
+                            
+                        </div>
+
+                        <div class="col-sm-12">
+                            @Html.ValidationMessageFor(x => x.Block, "", new { @class = "validationError" })
+                        </div>
+
                     </div>
 
-                    <div class="col-sm-12">
+                    <div class="col-sm-6" style="padding-top:10px;">
 
-                        <div class="col-sm-3" style="padding-top:15px;">
-                            @Html.LabelFor(x => x.Block)
+                        <div class="col-sm-12">
+
+                            <div class="col-sm-3" style="padding-top:15px;">
+                                @Html.LabelFor(x => x.SIMCard)
+                            </div>
+                            <div class="col-sm-9" style="padding-top:5px;">
+                                @Html.TextBoxFor(x => x.SIMCard)
+                            </div>
                         </div>
-                        <div class="col-sm-9" id="block" style="padding-top:5px;">
-                            @Html.TextBoxFor(x => x.Block)
-                            @Html.ValidationMessageFor(x => x.Block)
+
+                        <div class="col-sm-12">
+                            @Html.ValidationMessageFor(x => x.SIMCard, "", new { @class = "validationError" })
                         </div>
+
+
+                        <div class="col-sm-12">
+                            <div class="col-sm-3" style="padding-top:15px;">
+                                @Html.LabelFor(x => x.LMPD)
+                            </div>
+                            <div class="col-sm-9" style="padding-top:5px;">
+                                @Html.TextBoxFor(x => x.LMPD)
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            @Html.ValidationMessageFor(x => x.LMPD, "", new { @class = "validationError" })
+                        </div>
+
                     </div>
 
+                    </div>
 
+                <div class="col-sm-12">
+                    <div style="padding-top:10px;padding-bottom:10px; ">
+
+                        @*<a href="#" class="btn btn-primary " onclick="Search()">Search</a>*@
+                        <input type="button" id="search" value="Search">
+
+                    </div>
                 </div>
-
-                <div class="col-sm-6" style="padding-top:10px;">
-
-                    <div class="col-sm-12">
-
-                        <div class="col-sm-3" style="padding-top:15px;">
-                            @Html.LabelFor(x => x.SIMCard)
-                        </div>
-                        <div class="col-sm-9" style="padding-top:5px;">
-                            @Html.TextBoxFor(x => x.SIMCard)
-                        </div>
-                    </div>
-
-                    <div class="col-sm-12">
-                        <div class="col-sm-3" style="padding-top:15px;">
-                            @Html.LabelFor(x => x.LMPD)
-                        </div>
-                        <div class="col-sm-9" style="padding-top:5px;">
-                            @Html.TextBoxFor(x => x.LMPD)
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="col-sm-12">
-                <div style="padding-top:10px;padding-bottom:10px; ">
-                    <button style="height:25px;width:60px" id="SearchBtn">Search</button>
-                </div>
-            </div>
-
+            </form>
 
             <table class="table table-bordered">
                 <thead>
@@ -115,50 +137,53 @@
 
     </div>
 </body>
-
 <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+
 <script>
-    $(document).ready(function () {
-        $("#SearchBtn").click(function () {
-
-            var searchViewModel = {};
-            searchViewModel.Block=$("#Block").val();
-            searchViewModel.TownCouncil=$("#TownCouncil").val();
-            searchViewModel.SIMCard=$("#SIMCard").val();
-            searchViewModel.LMPD = $("#LMPD").val();
-            searchViewModel.SensorBoxInfoResults = [];
 
 
-            var setData = $("#SearchDetails");
-            setData.html("");
-            $.ajax({
-                type: "POST",
-                url: "/Search/submitSearch",
-                dataType: "json",
-                contentType: "application/json;",
-                data: JSON.stringify(searchViewModel),
-                error: function (xhr, status) {
-                    alert(status);
-                },
-                success: function (result) {
-                    if (result.length == 0) {
-                        setData.append("<tr><td>no data</td></tr>")
-                    }
-                    else {
-                        $.each(result, function (index, value) {
-                            var Data = "<tr>" +
-                                "<td>" + value.TownCouncil + "</td>" +
-                                "<td>" + value.BlockNo + "</td>" +
-                                "<td>" + value.SIMCard + "</td>" +
-                                "<td>" + value.LMPD + "</td>" +
-                                "</tr>";
-                            setData.append(Data);
-                        });
-                    }
+    //var Search = function () {
+    $("#search").click(function () {
+        var form = $("#myForm");
+        ``
 
+        var data = form.serialize();
+        if (!$("#myForm").valid()) {
+
+            return false;
+        }
+        debugger
+
+        var setData = $("#SearchDetails");
+        setData.html("");
+        $.ajax({
+            type: "POST",
+            url: "/Search/submitSearch",
+            //dataType: "json",
+            //contentType: "application/json;",
+            //data: JSON.stringify(searchViewModel),
+            data: data,
+
+            success: function (result) {
+                if (result.length == 0) {
+                    setData.append("<tr><td>no data</td></tr>")
                 }
-            });
+                else {
+                    $.each(result, function (index, value) {
+                        var Data = "<tr>" +
+                            "<td>" + value.TownCouncil + "</td>" +
+                            "<td>" + value.BlockNo + "</td>" +
+                            "<td>" + value.SIMCard + "</td>" +
+                            "<td>" + value.LMPD + "</td>" +
+                            "</tr>";
+                        setData.append(Data);
+                    });
+                }
 
+            }
         });
+
     });
+
+
 </script>

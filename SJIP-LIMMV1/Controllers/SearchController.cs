@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -28,7 +29,7 @@ namespace SJIP_LIMMV1.Controllers
         }
         [HttpPost]
         //[Route("/search/submitSearch")]
-        public async Task<ActionResult> submitSearch(SearchViewModel searchViewModel)
+        public async Task<JsonResult> submitSearch(SearchViewModel searchViewModel)
         {
 
             LiftInstallationDataDBEntities1 db = new LiftInstallationDataDBEntities1();
@@ -52,8 +53,7 @@ namespace SJIP_LIMMV1.Controllers
             }
 
             searchViewModel.SensorBoxInfoResults = sensorBoxInfo;
-
-
+            
             //return View("createView", searchViewModel);
             return Json(searchViewModel.SensorBoxInfoResults, JsonRequestBehavior.AllowGet);
 
