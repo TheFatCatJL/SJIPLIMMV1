@@ -30,7 +30,9 @@ namespace SJIP_LIMMV1
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                      "~/Scripts/bootstrap.js"));
+                      "~/Scripts/bootstrap.js",
+                     "~/Scripts/jquery.validate.js",
+                     "~/Scripts/jquery.validate.unobtrusive.min.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
