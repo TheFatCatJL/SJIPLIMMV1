@@ -1,0 +1,26 @@
+﻿@{
+    Layout = null;
+}
+
+@model List<HttpPostedFileWrapper>
+    <div>
+        
+        @using (Html.BeginForm("NameExtraction", "ExtractFileName", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <span>Select File:</span>
+            <input type="file" name="postedFiles" multiple directory webkitdirectory mozdirectory />
+            <hr />
+            <input type="submit" value="Upload" />
+            <br />
+            <span style="color:green">@ViewBag.Message</span>
+        }
+    </div>
+
+    @if (ViewBag.FileNames != null)
+    {
+        foreach (var list in ViewBag.FileNames)
+        {
+            <li>@list</li>
+        }
+    }
+
