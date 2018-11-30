@@ -38,8 +38,8 @@
                 <td class="col-sm-12" style="border-bottom:hidden; border-left:hidden; border-right:hidden ">
 
                     Number of record in a page:
-                    @Html.DropDownListFor(m => m.PagedSensorBoxInfo.PageSize, 
-                   Enumerable.Range(1, 10).Select(i => new SelectListItem { Text = i.ToString(), Value = i.ToString() }))
+                    @Html.DropDownListFor(m => m.PagedSensorBoxInfo.PageSize,
+    Enumerable.Range(1, 10).Select(i => new SelectListItem { Text = i.ToString(), Value = i.ToString() }), new { onchange = "pageSizeChange()" })
                     @*<select name="pageSize" >
             <option value=1>1</option>
             <option value=2>2</option>

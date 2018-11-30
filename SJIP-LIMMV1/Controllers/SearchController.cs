@@ -62,13 +62,14 @@ namespace SJIP_LIMMV1.Controllers
         }
 
         [HttpGet]
-        public ActionResult pagedResult(int size, int page)
+        public ActionResult pagedResult(int size, int? page)
         {
 
             SearchViewModel searchViewModel = new SearchViewModel();
 
+            int pageNumber = (page ?? 1);
           
-            searchViewModel.PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(currentSensorBoxInfoList, page, size);
+            searchViewModel.PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(currentSensorBoxInfoList, pageNumber, size);
 
             return PartialView("_SearchResult", searchViewModel);           
         }

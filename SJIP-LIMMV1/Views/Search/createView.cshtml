@@ -118,32 +118,67 @@
 </body>
 
 <script>
-  
+    function pageSizeChange() {
+        var pageSize = $("#PagedSensorBoxInfo_PageSize").val();
+        $.ajax({
+            url: "/Search/pagedResult?size=" + pageSize + "&page=",
+            type: 'GET',
+            cache: false,
+            //data: { 'size': pageSize, 'page': page },
+
+            success: function (result) {
+                debugger;
+                $("#resultTable").html(result);//use returned data to render data table 
+            },
+            error: function () {
+
+                alert("DropdownList ajax error")
+            }
+        });
+    }
     $(document).ready(function () {//jQuery used to direct each page number click to pagedResult action(searchController) and get back a partial view of data table
         $(document).on("click", "#contentPager a", function (e) {
-            
+
             var page = parseInt($(this).html());//get page number of the link later pass this param to controller   
             var pageSize = parseInt($("select[name*='PagedSensorBoxInfo.PageSize']").val());
-            
-            $.ajax({                
+
+            $.ajax({
                 url: "/Search/pagedResult?size=" + pageSize + "&page=" + page,
                 type: 'GET',
-                cache: false,              
-                data: { 'size': pageSize,'page': page  },
+                cache: false,
+                data: { 'size': pageSize, 'page': page },
 
                 success: function (result) {
                     debugger;
                     $("#resultTable").html(result);//use returned data to render data table 
                 },
                 error: function () {
-                    
-                    alert("Error occur!!!!!!!!!!!")
+
+                    alert("Page Link ajax Error")
                 }
             });
             e.preventDefault();//disable default click event in order to only trigger ajax
-        });
-    });
+        }); 
 
+        //$("#PagedSensorBoxInfo_PageSize").change(function (e) {
+        //    var pageSize = $(this).val();
+        //    $.ajax({
+        //        url: "/Search/pagedResult?size=" + pageSize + "&page=",
+        //        type: 'GET',
+        //        cache: false,
+        //        //data: { 'size': pageSize, 'page': page },
+
+        //        success: function (result) {
+        //            debugger;
+        //            $("#resultTable").html(result);//use returned data to render data table 
+        //        },
+        //        error: function () {
+
+        //            alert("DropdownList ajax error")
+        //        }
+        //    });
+        //});
+    });
     $("#search").click(function () {
         var form = $("#myForm");
 
@@ -167,10 +202,12 @@
             },
             error: function () {
 
-                alert("Error occur!!!!!!!!!!!")
+                alert("search click ajax error")
             }
         });
 
     });
+
+   
 
 </script>
