@@ -101,11 +101,16 @@
                 </div>
 
                 <div class="col-sm-12">
-                    <div style="padding-top:10px;padding-bottom:10px; ">
+                    <span style="padding-top:10px;padding-bottom:10px; ">
 
                         <input type="button" id="search" value="Search">
 
-                    </div>
+                    </span>
+                    <span style="padding-top:10px;padding-bottom:10px; ">
+
+                        <input type="button" id="clear" value="Clear">
+
+                    </span>
                 </div>
             </form>
             <div class="col-sm-12" id="resultTable">
@@ -159,25 +164,7 @@
             });
             e.preventDefault();//disable default click event in order to only trigger ajax
         }); 
-
-        //$("#PagedSensorBoxInfo_PageSize").change(function (e) {
-        //    var pageSize = $(this).val();
-        //    $.ajax({
-        //        url: "/Search/pagedResult?size=" + pageSize + "&page=",
-        //        type: 'GET',
-        //        cache: false,
-        //        //data: { 'size': pageSize, 'page': page },
-
-        //        success: function (result) {
-        //            debugger;
-        //            $("#resultTable").html(result);//use returned data to render data table 
-        //        },
-        //        error: function () {
-
-        //            alert("DropdownList ajax error")
-        //        }
-        //    });
-        //});
+    
     });
     $("#search").click(function () {
         var form = $("#myForm");
@@ -207,6 +194,37 @@
         });
 
     });
+
+    $("#clear").click(function () {
+        $("#myForm").find("input[type=text], textarea").val("");
+        var form = $("#myForm");
+
+        var data = form.serialize();//must serialize form in order to retrieve send all textBox data at one-go
+
+        //validate form data before send to controller
+        if (!$("#myForm").valid()) {
+
+            return false;
+        }
+
+        var setData = $("#SearchDetails");
+        setData.html("");
+        $.ajax({
+            type: "POST",
+            url: "/Search/submitSearch",
+            data: data,
+            success: function (result) {
+                debugger;
+                $("#resultTable").html(result);//use returned data to render data table 
+            },
+            error: function () {
+
+                alert("search click ajax error")
+            }
+        });
+
+    });
+
 
    
 
