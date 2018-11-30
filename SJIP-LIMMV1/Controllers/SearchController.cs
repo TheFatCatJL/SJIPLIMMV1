@@ -12,29 +12,29 @@ namespace SJIP_LIMMV1.Controllers
 {
     public class SearchController : Controller
     {
-        LiftInstallationDataDBEntities1 db = new LiftInstallationDataDBEntities1();
-
+         LiftInstallationDataDBEntities1 db = new LiftInstallationDataDBEntities1();
+        static List<SensorBoxInfo> currentSensorBoxInfoList;
+        //static int currentPageSize;
+        //static int currentPageNumber;
 
         // GET: Search
-        //[Route("/search/createView/{searchViewModel}")]
         public ActionResult createView()
         {                       
             SearchViewModel searchViewModel = new SearchViewModel();
+
+            currentSensorBoxInfoList = db.SensorBoxInfoes.ToList();
+
+            //set initial page number and size
             
-            searchViewModel.SensorBoxInfoResults = db.SensorBoxInfoes.ToList();
-            PagedList<SensorBoxInfo> pagedModel = new PagedList<SensorBoxInfo>(searchViewModel.SensorBoxInfoResults, 1, 2);
-            
-            searchViewModel.PagedSensorBoxInfo = pagedModel;   
-            
-            //RedirectToAction("submitSearch");
-            //PagedList <SensorBoxInfo> = new PagedList<SensorBoxInfo>(pageNumber, pageSize);
+            PagedList<SensorBoxInfo> pagedModel = new PagedList<SensorBoxInfo>(currentSensorBoxInfoList, searchViewModel.defaultPageNumber, searchViewModel.defaultPageSize);
+
+            searchViewModel.PagedSensorBoxInfo = pagedModel;    
             return View(searchViewModel);
         }
-        [HttpPost]
-        //[Route("/search/submitSearch")]
-        public JsonResult submitSearch(SearchViewModel searchViewModel, int? page)
-        {
 
+        [HttpPost]        
+        public ActionResult submitSearch(SearchViewModel searchViewModel)
+        {
             var sensorBoxInfo = db.SensorBoxInfoes.ToList();
 
             if (searchViewModel.Block != null)
@@ -52,37 +52,25 @@ namespace SJIP_LIMMV1.Controllers
             if (searchViewModel.LMPD != null)
             {
                 sensorBoxInfo = sensorBoxInfo.Where(x => x.LMPD.ToLower().StartsWith(searchViewModel.LMPD.Trim().ToLower())).ToList();
-            }
-         
-            searchViewModel.SensorBoxInfoResults = sensorBoxInfo;
-            int pageSize = 2;
+            }         
+            
+            currentSensorBoxInfoList = sensorBoxInfo;
 
-            int pageNumber = (page ?? 1);
-            searchViewModel.PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(searchViewModel.SensorBoxInfoResults, pageNumber, pageSize);
+            searchViewModel.PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(currentSensorBoxInfoList, searchViewModel.defaultPageNumber, searchViewModel.defaultPageSize);
 
-            //return View("_SearchResult", searchViewModel.PagedSensorBoxInfo);
-            return Json(searchViewModel.SensorBoxInfoResults, JsonRequestBehavior.AllowGet);
-
+            return PartialView("_SearchResult", searchViewModel);
         }
 
         [HttpGet]
-        public ActionResult pagedResult( int? page)
+        public ActionResult pagedResult(int size, int page)
         {
 
             SearchViewModel searchViewModel = new SearchViewModel();
 
-            var sensorBoxInfo = db.SensorBoxInfoes.ToList();
+          
+            searchViewModel.PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(currentSensorBoxInfoList, page, size);
 
-            searchViewModel.SensorBoxInfoResults = sensorBoxInfo;
-            int pageSize = 2;
-
-            int pageNumber = (page ?? 1);
-            searchViewModel.PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(searchViewModel.SensorBoxInfoResults, pageNumber, pageSize);
-
-            return View("_SearchResult", searchViewModel);
-           
-            
-
+            return PartialView("_SearchResult", searchViewModel);           
         }
 
 

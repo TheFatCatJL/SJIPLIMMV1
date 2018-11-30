@@ -21,25 +21,27 @@ namespace SJIP_LIMMV1.Models
         [RegularExpression("^\\s*[a-zA-Z]{0,2}[0-9]{0,10}\\s*$", ErrorMessage = "Please enter LMPD number start with 2 letters followed with 10 numbers")]
         public String LMPD { get; set; }
 
-        public List<SensorBoxInfo> SensorBoxInfoResults { get; set; }
+        public int defaultPageNumber { get; set; }
+
+        public int defaultPageSize { get; set; }
+
+        public List<SensorBoxInfo> SensorBoxInfoRecordList { get; set; }
         public PagedList<SensorBoxInfo> PagedSensorBoxInfo { get; set; }
 
 
         public SearchViewModel()
         {
+            defaultPageNumber = 1;
+            defaultPageSize = 4;
             TownCouncil = null;
             SIMCard = null;
             Block = null;
             LMPD = null;
             int pageNumber;
             pageNumber = 1;
-            SensorBoxInfoResults = new List<SensorBoxInfo>();
-            PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(SensorBoxInfoResults, pageNumber, 2);
+            SensorBoxInfoRecordList = new List<SensorBoxInfo>();
+            PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(SensorBoxInfoRecordList, pageNumber, 2);
         }
-       
-        
-       
-
-
+      
     }
 }

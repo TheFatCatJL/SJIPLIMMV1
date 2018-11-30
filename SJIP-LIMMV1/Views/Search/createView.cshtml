@@ -103,13 +103,12 @@
                 <div class="col-sm-12">
                     <div style="padding-top:10px;padding-bottom:10px; ">
 
-                        @*<a href="#" class="btn btn-primary " onclick="Search()">Search</a>*@
                         <input type="button" id="search" value="Search">
 
                     </div>
                 </div>
             </form>
-            <div id="resultTable">
+            <div class="col-sm-12" id="resultTable">
                 @Html.Partial("_SearchResult", Model)
             </div>
         </div>
@@ -122,14 +121,15 @@
   
     $(document).ready(function () {//jQuery used to direct each page number click to pagedResult action(searchController) and get back a partial view of data table
         $(document).on("click", "#contentPager a", function (e) {
-            e.preventDefault();//disable default click event in order to only trigger ajax
+            
             var page = parseInt($(this).html());//get page number of the link later pass this param to controller   
-            var pageSize = 3
-            $.ajax({
-                url: $(this).attr("href"),// page link with different page number
+            var pageSize = parseInt($("select[name*='PagedSensorBoxInfo.PageSize']").val());
+            
+            $.ajax({                
+                url: "/Search/pagedResult?size=" + pageSize + "&page=" + page,
                 type: 'GET',
-                cache: false,
-                data:page ,
+                cache: false,              
+                data: { 'size': pageSize,'page': page  },
 
                 success: function (result) {
                     debugger;
@@ -140,49 +140,37 @@
                     alert("Error occur!!!!!!!!!!!")
                 }
             });
-        
+            e.preventDefault();//disable default click event in order to only trigger ajax
         });
     });
+
     $("#search").click(function () {
         var form = $("#myForm");
-        
 
-        var data = form.serialize();
+        var data = form.serialize();//must serialize form in order to retrieve send all textBox data at one-go
+
+        //validate form data before send to controller
         if (!$("#myForm").valid()) {
 
             return false;
         }
-        
+
         var setData = $("#SearchDetails");
         setData.html("");
         $.ajax({
             type: "POST",
             url: "/Search/submitSearch",
-            //dataType: "json",
-            //contentType: "application/json;",
-            //data: JSON.stringify(searchViewModel),
             data: data,
-
             success: function (result) {
-                if (result.length == 0) {
-                    setData.append("<div class=\"validationError\" >No data</div>")
-                }
-                else {
-                    $.each(result, function (index, value) {
-                        var Data = "<tr>" +
-                            "<td>" + value.TownCouncil + "</td>" +
-                            "<td>" + value.BlockNo + "</td>" +
-                            "<td>" + value.SIMCard + "</td>" +
-                            "<td>" + value.LMPD + "</td>" +
-                            "</tr>";
-                        setData.append(Data);
-                    });
-                }
+                debugger;
+                $("#resultTable").html(result);//use returned data to render data table 
+            },
+            error: function () {
 
+                alert("Error occur!!!!!!!!!!!")
             }
         });
 
     });
-
 
 </script>
