@@ -6,17 +6,17 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Town Council</th>
-                <th>Block</th>
-                <th>SIM Card</th>
-                <th>LMPD</th>
+                <th>@Html.DisplayNameFor(x=>x.PagedSensorBoxInfo.First().TownCouncil)</th>
+                <th>@Html.DisplayNameFor(x => x.PagedSensorBoxInfo.First().BlockNo)</th>
+                <th>@Html.DisplayNameFor(x => x.PagedSensorBoxInfo.First().SIMCard)</th>
+                <th>@Html.DisplayNameFor(x => x.PagedSensorBoxInfo.First().LMPD)</th>
             </tr>
         </thead>
         <tbody id="SearchDetails">
             @if (Model.PagedSensorBoxInfo.Count() == 0)
             {
                 <tr>
-                    <td>
+                    <td style="border-bottom:hidden; border-left:hidden; border-right:hidden ">
                         <p style="color:red;">No Record Found</p>
                     </td>
                 </tr>
@@ -40,19 +40,6 @@
                     Number of record in a page:
                     @Html.DropDownListFor(m => m.PagedSensorBoxInfo.PageSize,
     Enumerable.Range(1, 10).Select(i => new SelectListItem { Text = i.ToString(), Value = i.ToString() }), new { onchange = "pageSizeChange()" })
-                    @*<select name="pageSize" >
-            <option value=1>1</option>
-            <option value=2>2</option>
-            <option value=3>3</option>
-            <option value=4>4</option>
-            <option value=5>5</option>
-            <option value=6>6</option>
-            <option value=7>7</option>
-            <option value=8>8</option>
-            <option value=9>9</option>
-            <option value=10>10</option>
-        </select>*@
-
 
                     Page @(Model.PagedSensorBoxInfo.PageCount < Model.PagedSensorBoxInfo.PageNumber ? 0 : Model.PagedSensorBoxInfo.PageNumber)
                     of @Model.PagedSensorBoxInfo.PageCount
