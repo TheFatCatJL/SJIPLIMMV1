@@ -6,33 +6,35 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using SJIP_LIMMV1.Models;
+using PagedList;
 
 namespace SJIP_LIMMV1.Controllers
 {
     public class SearchController : Controller
     {
-
+        LiftInstallationDataDBEntities1 db = new LiftInstallationDataDBEntities1();
 
 
         // GET: Search
         //[Route("/search/createView/{searchViewModel}")]
         public ActionResult createView()
-        {
-
-            LiftInstallationDataDBEntities1 db = new LiftInstallationDataDBEntities1();
+        {                       
             SearchViewModel searchViewModel = new SearchViewModel();
-
-
+            
             searchViewModel.SensorBoxInfoResults = db.SensorBoxInfoes.ToList();
-
+            PagedList<SensorBoxInfo> pagedModel = new PagedList<SensorBoxInfo>(searchViewModel.SensorBoxInfoResults, 1, 2);
+            
+            searchViewModel.PagedSensorBoxInfo = pagedModel;   
+            
+            //RedirectToAction("submitSearch");
+            //PagedList <SensorBoxInfo> = new PagedList<SensorBoxInfo>(pageNumber, pageSize);
             return View(searchViewModel);
         }
         [HttpPost]
         //[Route("/search/submitSearch")]
-        public async Task<JsonResult> submitSearch(SearchViewModel searchViewModel)
+        public JsonResult submitSearch(SearchViewModel searchViewModel, int? page)
         {
 
-            LiftInstallationDataDBEntities1 db = new LiftInstallationDataDBEntities1();
             var sensorBoxInfo = db.SensorBoxInfoes.ToList();
 
             if (searchViewModel.Block != null)
@@ -51,13 +53,39 @@ namespace SJIP_LIMMV1.Controllers
             {
                 sensorBoxInfo = sensorBoxInfo.Where(x => x.LMPD.ToLower().StartsWith(searchViewModel.LMPD.Trim().ToLower())).ToList();
             }
-
+         
             searchViewModel.SensorBoxInfoResults = sensorBoxInfo;
-            
-            //return View("createView", searchViewModel);
+            int pageSize = 2;
+
+            int pageNumber = (page ?? 1);
+            searchViewModel.PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(searchViewModel.SensorBoxInfoResults, pageNumber, pageSize);
+
+            //return View("_SearchResult", searchViewModel.PagedSensorBoxInfo);
             return Json(searchViewModel.SensorBoxInfoResults, JsonRequestBehavior.AllowGet);
 
         }
+
+        [HttpGet]
+        public ActionResult pagedResult( int? page)
+        {
+
+            SearchViewModel searchViewModel = new SearchViewModel();
+
+            var sensorBoxInfo = db.SensorBoxInfoes.ToList();
+
+            searchViewModel.SensorBoxInfoResults = sensorBoxInfo;
+            int pageSize = 2;
+
+            int pageNumber = (page ?? 1);
+            searchViewModel.PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(searchViewModel.SensorBoxInfoResults, pageNumber, pageSize);
+
+            return View("_SearchResult", searchViewModel);
+           
+            
+
+        }
+
+
 
     }
 }

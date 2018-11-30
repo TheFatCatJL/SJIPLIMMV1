@@ -1,5 +1,4 @@
-﻿@using SJIP_LIMMV1.Models
-@model  SJIP_LIMMV1.Models.SearchViewModel
+﻿@model  SJIP_LIMMV1.Models.SearchViewModel
 @{
     ViewBag.Title = "createView";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -110,32 +109,9 @@
                     </div>
                 </div>
             </form>
-
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Town Council</th>
-                        <th>Block</th>
-                        <th>SIM Card</th>
-                        <th>LMPD</th>
-                    </tr>
-                </thead>
-                <tbody id="SearchDetails">
-
-                    @foreach (SensorBoxInfo item in Model.SensorBoxInfoResults)
-                    {
-                        <tr>
-                            <td>@item.TownCouncil </td>
-                            <td>@item.BlockNo </td>
-                            <td>@item.SIMCard</td>
-                            <td>@item.LMPD</td>
-                        </tr>
-
-                    }
-                </tbody>
-
-            </table>
-
+            <div id="resultTable">
+                @Html.Partial("_SearchResult", Model)
+            </div>
         </div>
 
 
@@ -143,20 +119,40 @@
 </body>
 
 <script>
+  
+    $(document).ready(function () {//jQuery used to direct each page number click to pagedResult action(searchController) and get back a partial view of data table
+        $(document).on("click", "#contentPager a", function (e) {
+            e.preventDefault();//disable default click event in order to only trigger ajax
+            var page = parseInt($(this).html());//get page number of the link later pass this param to controller   
+            var pageSize = 3
+            $.ajax({
+                url: $(this).attr("href"),// page link with different page number
+                type: 'GET',
+                cache: false,
+                data:page ,
 
-
-    //var Search = function () {
+                success: function (result) {
+                    debugger;
+                    $("#resultTable").html(result);//use returned data to render data table 
+                },
+                error: function () {
+                    
+                    alert("Error occur!!!!!!!!!!!")
+                }
+            });
+        
+        });
+    });
     $("#search").click(function () {
         var form = $("#myForm");
-        ``
+        
 
         var data = form.serialize();
         if (!$("#myForm").valid()) {
 
             return false;
         }
-        debugger
-
+        
         var setData = $("#SearchDetails");
         setData.html("");
         $.ajax({
@@ -169,7 +165,7 @@
 
             success: function (result) {
                 if (result.length == 0) {
-                    setData.append("<tr><td>no data</td></tr>")
+                    setData.append("<div class=\"validationError\" >No data</div>")
                 }
                 else {
                     $.each(result, function (index, value) {

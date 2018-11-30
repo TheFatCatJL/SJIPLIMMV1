@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
+using PagedList;
 
 namespace SJIP_LIMMV1.Models
 {
@@ -21,6 +22,8 @@ namespace SJIP_LIMMV1.Models
         public String LMPD { get; set; }
 
         public List<SensorBoxInfo> SensorBoxInfoResults { get; set; }
+        public PagedList<SensorBoxInfo> PagedSensorBoxInfo { get; set; }
+
 
         public SearchViewModel()
         {
@@ -28,8 +31,14 @@ namespace SJIP_LIMMV1.Models
             SIMCard = null;
             Block = null;
             LMPD = null;
+            int pageNumber;
+            pageNumber = 1;
             SensorBoxInfoResults = new List<SensorBoxInfo>();
+            PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(SensorBoxInfoResults, pageNumber, 2);
         }
+       
+        
+       
 
 
     }

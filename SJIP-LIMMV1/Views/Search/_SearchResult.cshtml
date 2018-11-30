@@ -1,0 +1,41 @@
+﻿@model SJIP_LIMMV1.Models.SearchViewModel
+@using PagedList.Mvc;
+
+<div id="content">
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Town Council</th>
+                <th>Block</th>
+                <th>SIM Card</th>
+                <th>LMPD</th>
+            </tr>
+        </thead>
+        <tbody id="SearchDetails">
+
+            @foreach (var item in Model.PagedSensorBoxInfo)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(x => item.TownCouncil) </td>
+                    <td>@Html.DisplayFor(x=>item.BlockNo) </td>
+                    <td>@Html.DisplayFor(x => item.SIMCard)</td>
+                    <td>@Html.DisplayFor(x => item.LMPD)</td>
+                </tr>
+
+            }
+        </tbody>
+        <tfoot>
+
+            Page @(Model.PagedSensorBoxInfo.PageCount < Model.PagedSensorBoxInfo.PageNumber ? 0 : Model.PagedSensorBoxInfo.PageNumber) of @Model.PagedSensorBoxInfo.PageCount
+
+
+
+        </tfoot>
+    </table>
+
+    <div id="contentPager">
+        @Html.PagedListPager(Model.PagedSensorBoxInfo, page => Url.Action("pagedResult", new { page }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions { UpdateTargetId = "resultTable" }))
+    </div>
+
+</div>
