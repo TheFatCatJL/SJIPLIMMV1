@@ -9,8 +9,8 @@ namespace SJIP_LIMMV1.Models
 {
     public class SearchViewModel
     {
-        //white space at both end of the string will be ignored; only accept max 30 letter input
-        const string regExrTownCouncil = "^\\s*[a-zA-Z]{0,30}\\s*$";
+        //white space at both end of the string will be ignored; only accept max 30 letter input;allow space between words
+        const string regExrTownCouncil = "^\\s*[a-zA-Z ]{0,30}\\s*$";
 
         //white space at both end of the string will be ignored;first 14 digits must be numbers; 15th digit must be "-" and remaining 4 digits must be number
         const string regExrSIMCard = "^\\s*[0-9]{0,14}(-){0,1}[0,9]{0,4}\\s*$";
