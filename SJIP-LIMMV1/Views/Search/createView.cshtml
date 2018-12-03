@@ -128,23 +128,33 @@
         $.ajax({
             url: "/Search/pagedResult?size=" + pageSize + "&page=",
             type: 'GET',
-            cache: false,
-            //data: { 'size': pageSize, 'page': page },
+            cache: false,          
 
             success: function (result) {
                 debugger;
                 $("#resultTable").html(result);//use returned data to render data table 
             },
             error: function () {
-
                 alert("DropdownList ajax error")
             }
         });
     }
+
     $(document).ready(function () {//jQuery used to direct each page number click to pagedResult action(searchController) and get back a partial view of data table
         $(document).on("click", "#contentPager a", function (e) {
-
-            var page = parseInt($(this).html());//get page number of the link later pass this param to controller   
+            var page;
+            //first check if user click the "next"/"prev" link
+            if ($(this).attr("rel") === "next") {
+                page = parseInt($(this).attr("href").split('=')[1]);
+            }
+            else if ($(this).attr("rel") === "prev") {
+                page = parseInt($(this).attr("href").split('=')[1]);
+            }
+            else
+            {
+                page = parseInt($(this).html());//get page number of the link later pass this param to controller   
+                
+            }
             var pageSize = parseInt($("select[name*='PagedSensorBoxInfo.PageSize']").val());
 
             $.ajax({
@@ -163,9 +173,9 @@
                 }
             });
             e.preventDefault();//disable default click event in order to only trigger ajax
-        }); 
-    
+        });     
     });
+
     $("#search").click(function () {
         var form = $("#myForm");
 
@@ -177,8 +187,6 @@
             return false;
         }
 
-        var setData = $("#SearchDetails");
-        setData.html("");
         $.ajax({
             type: "POST",
             url: "/Search/submitSearch",
@@ -196,7 +204,8 @@
     });
 
     $("#clear").click(function () {
-        $("#myForm").find("input[type=text], textarea").val("");
+        $("#myForm").find("input[type=text], textarea").val("");//clear all search input field
+
         var form = $("#myForm");
 
         var data = form.serialize();//must serialize form in order to retrieve send all textBox data at one-go
@@ -207,8 +216,6 @@
             return false;
         }
 
-        var setData = $("#SearchDetails");
-        setData.html("");
         $.ajax({
             type: "POST",
             url: "/Search/submitSearch",
@@ -224,8 +231,4 @@
         });
 
     });
-
-
-   
-
 </script>

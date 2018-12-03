@@ -12,10 +12,8 @@ namespace SJIP_LIMMV1.Controllers
 {
     public class SearchController : Controller
     {
-         LiftInstallationDataDBEntities1 db = new LiftInstallationDataDBEntities1();
-        static List<SensorBoxInfo> currentSensorBoxInfoList;
-        //static int currentPageSize;
-        //static int currentPageNumber;
+        LiftInstallationDataDBEntities1 db = new LiftInstallationDataDBEntities1();
+        static List<SensorBoxInfo> currentSensorBoxInfoList;//current search returned result
 
         // GET: Search
         public ActionResult createView()
@@ -24,8 +22,7 @@ namespace SJIP_LIMMV1.Controllers
 
             currentSensorBoxInfoList = db.SensorBoxInfoes.ToList();
 
-            //set initial page number and size
-            
+            //set initial page number and size            
             PagedList<SensorBoxInfo> pagedModel = new PagedList<SensorBoxInfo>(currentSensorBoxInfoList, searchViewModel.defaultPageNumber, searchViewModel.defaultPageSize);
 
             searchViewModel.PagedSensorBoxInfo = pagedModel;    
