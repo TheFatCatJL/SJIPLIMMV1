@@ -32,30 +32,35 @@ namespace SJIP_LIMMV1.Controllers
         [HttpPost]        
         public ActionResult submitSearch(SearchViewModel searchViewModel)
         {
-            var sensorBoxInfo = db.SensorBoxInfoes.ToList();
+           
+                var sensorBoxInfo = db.SensorBoxInfoes.ToList();
 
-            if (searchViewModel.Block != null)
-            {
-                sensorBoxInfo = sensorBoxInfo.Where(x => (x.BlockNo.ToString()).StartsWith((searchViewModel.Block.ToString().Trim()))).ToList();
-            }
-            if (searchViewModel.TownCouncil != null)
-            {
-                sensorBoxInfo = sensorBoxInfo.Where(x => x.TownCouncil.ToLower().Contains(searchViewModel.TownCouncil.Trim().ToLower())).ToList();
-            }
-            if (searchViewModel.SIMCard != null)
-            {
-                sensorBoxInfo = sensorBoxInfo.Where(x => x.SIMCard.ToLower().StartsWith(searchViewModel.SIMCard.Trim().ToLower())).ToList();
-            }
-            if (searchViewModel.LMPD != null)
-            {
-                sensorBoxInfo = sensorBoxInfo.Where(x => x.LMPD.ToLower().StartsWith(searchViewModel.LMPD.Trim().ToLower())).ToList();
-            }         
+
+                if (searchViewModel.Block != null)
+                {
+                    sensorBoxInfo = sensorBoxInfo.Where(x => (x.BlockNo.ToString()).StartsWith((searchViewModel.Block.ToString().Trim()))).ToList();
+                }
+                if (searchViewModel.TownCouncil != null)
+                {
+                    sensorBoxInfo = sensorBoxInfo.Where(x => x.TownCouncil.ToLower().Contains(searchViewModel.TownCouncil.Trim().ToLower())).ToList();
+                }
+                if (searchViewModel.SIMCard != null)
+                {
+                    sensorBoxInfo = sensorBoxInfo.Where(x => x.SIMCard.ToLower().StartsWith(searchViewModel.SIMCard.Trim().ToLower())).ToList();
+                }
+                if (searchViewModel.LMPD != null)
+                {
+                    sensorBoxInfo = sensorBoxInfo.Where(x => x.LMPD.ToLower().StartsWith(searchViewModel.LMPD.Trim().ToLower())).ToList();
+                }
+
+
+                currentSensorBoxInfoList = sensorBoxInfo;
+
+                searchViewModel.PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(currentSensorBoxInfoList, searchViewModel.defaultPageNumber, searchViewModel.defaultPageSize);
+
+                return PartialView("_SearchResult", searchViewModel);
+                
             
-            currentSensorBoxInfoList = sensorBoxInfo;
-
-            searchViewModel.PagedSensorBoxInfo = new PagedList<SensorBoxInfo>(currentSensorBoxInfoList, searchViewModel.defaultPageNumber, searchViewModel.defaultPageSize);
-
-            return PartialView("_SearchResult", searchViewModel);
         }
 
         [HttpGet]
