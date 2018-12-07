@@ -1,0 +1,39 @@
+﻿@using NonFactors.Mvc.Grid;
+@model IEnumerable<SJIP_LIMMV1.Models.BoxInfoViewModel>
+@{
+    ViewBag.Title = "BoxHistory";
+}
+
+@(Html
+    .Grid(Model)
+    .Build(columns =>
+    {
+        columns.Add(model => $"<button class=editbutton data-url=\"{Url.Action("BoxEditSectionGetBox", "BoxInfo", new { @id = model.id })}\">Edit</button>").Encoded(false);
+        columns.Add(model => model.lmpdnum).Titled("LMPD #");
+        columns.Add(model => model.simnum).Titled("Simcard #");
+        columns.Add(model => model.jsonid).Titled("JSON ID");
+        columns.Add(model => model.telco).Titled("Telco");
+        columns.Add(model => model.checkername).Titled("Checker Name");
+        columns.Add(model => model.techname).Titled("Tech Name");
+        columns.Add(model => model.checkdate).Titled("Check Date");
+        columns.Add(model => model.installdate).Titled("Install Date");
+        columns.Add(model => model.status).Titled("Status");
+        columns.Add(model => model.history).Titled("History");
+    })
+    .Empty("No data found")
+    .Pageable(pager =>
+    {
+        pager.PagesToDisplay = 5;
+        pager.RowsPerPage = 4;
+    })
+    .Filterable()
+)
+@Scripts.Render("~/bundles/mvcgrid")
+@Styles.Render("~/Content/cssgrid")
+
+<script>
+    [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+        new MvcGrid(element);
+    });
+</script>
+

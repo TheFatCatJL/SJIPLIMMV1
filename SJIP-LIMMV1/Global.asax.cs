@@ -1,5 +1,8 @@
-﻿using System;
+﻿using SJIP_LIMMV1.Repository;
+using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -18,6 +21,9 @@ namespace SJIP_LIMMV1
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            log4net.Config.XmlConfigurator.Configure(new FileInfo(Server.MapPath("~/Web.config")));
+            // drop temp DB if any changes - remove when going into deployment
+            System.Data.Entity.Database.SetInitializer<BoxInfoContext>(new System.Data.Entity.DropCreateDatabaseIfModelChanges<BoxInfoContext>());
         }
     }
 }

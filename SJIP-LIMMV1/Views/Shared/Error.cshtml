@@ -4,14 +4,18 @@
     ViewBag.Title = "Error";
 }
 
-<h1 class="text-danger">Error.</h1>
 @{
-    if (String.IsNullOrEmpty(ViewBag.errorMessage))
+    if (ViewData ==null)
     {
+        <h1 class="text-danger">Error (Generic)</h1>
         <h2 class="text-danger">An error occurred while processing your request.</h2>
     }
     else
     {
-        <h2 class="text-danger">@ViewBag.errorMessage</h2>
+        <h1 class="text-danger">Error (@ViewData["errorMessage"].ToString())</h1>
+        <h3>Please choose perform suggested action below:</h3>
+        string txt = ViewData["txtString"] == null ? "Back to home" : ViewData["txtString"].ToString();
+        string route = ViewData["routeString"] == null ? "/home/index" : ViewData["routeString"].ToString();
+        <h3><a href="@route">@txt</a></h3>
     }
 }

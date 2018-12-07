@@ -1,0 +1,58 @@
+﻿@model SJIP_LIMMV1.Models.BoxInfoViewModel
+
+@{
+    ViewBag.Title = "BoxInfo";
+}
+<div class="table">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Register Box</h2>
+        </div>
+    </div>
+    <section id="BoxRegForm">
+        <div class="row">
+            <div class="col-md-12">
+                <span style="padding:5px;"></span>
+
+                @using (Html.BeginForm("SubmitBox", "BoxInfo", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.status)
+                    <div class="form-group">
+                        @Html.ValidationMessageFor(m => m.lmpdnum, "", new { @class = "text-danger" })
+                        @Html.LabelFor(m => m.lmpdnum, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.lmpdnum, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.ValidationMessageFor(m => m.simnum, "", new { @class = "text-danger" })
+                        @Html.LabelFor(m => m.simnum, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(m => m.simnum, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.telcolist, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @{ var selectTelco = Model.telcolist.Select(s => new SelectListItem { Value = s, Text = s }).ToList(); }
+                            @Html.DropDownListFor(m => m.telco, selectTelco, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.jsonlist, new { @class = "col-md-2 control-label" })
+                        <div class="col-md-10">
+                            @{ var selectJSONID = Model.jsonlist.Select(s => new SelectListItem { Value = s, Text = s }).ToList(); }
+                            @Html.DropDownListFor(m => m.jsonid, selectJSONID, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group" style="padding-top:25px;">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Save" class="btn btn-default" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+</div>

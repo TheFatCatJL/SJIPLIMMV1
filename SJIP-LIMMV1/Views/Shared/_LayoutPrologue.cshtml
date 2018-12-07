@@ -1,14 +1,18 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-		<title>LIMM version 1.0</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		@Styles.Render("~/Content/cssprologue")
-		@Styles.Render("~/Content/css")
-		@Scripts.Render("~/bundles/modernizr")
+    <title>LIMM version 1.0</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    @Styles.Render("~/Content/cssprologue")
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
 
 </head>
+<!--
+    Content modified by Jason Lim.
+    Design based on Prologue by HTML5 UP permitted under the CCA 3.0 license (html5up.net/license) on 15 Nov 2018
+-->
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
@@ -23,28 +27,142 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Box", "BoxInfoSection", "BoxInfo")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
         </div>
     </div>
+
+    <div id="header">
+        <div class="top">
+            <!-- Logo -->
+            <div id="logo">
+                <span class="image avatar48"><img src="~/images/lift1.png" alt="" /></span>
+                <h1 id="title" style="padding-top:5px;">@ViewBag.UserGreeting.ToString()</h1>
+                @using Microsoft.AspNet.Identity
+                @{
+                    string linegreet = String.Format("{0} ({1})", @User.Identity.GetUserName().ToString(), @ViewBag.UserRoleName.ToString());
+                }
+                <p style="font-size:12px"> @Html.ActionLink(linegreet, "index", "Manage", null, htmlAttributes: new { title = "Manage" })</p>
+            </div>
+            <!-- Nav -->
+            <nav id="nav">
+                <ul>
+                    <li><a href="\#" data-action=@Url.Action("BoxInfoSection", "BoxInfo") id="boxLink"><span class="glyphicon glyphicon-briefcase"></span>Box Data Preperation</a></li>
+                    <li><a href="\#" data-action=@Url.Action("Index", "Manage") id="userLink"><span class="glyphicon glyphicon-user"></span>User</a></li>
+                    <li><a href="\#" data-action=@Url.Action("Contact", "Home") id="contactLink"><span class='glyphicon glyphicon-envelope'></span>Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
     <div class="container body-content">
         @RenderBody()
-        <hr />
-        <footer>
+        <div class="navbar navbar-fixed-bottom text-center" id="footer">
             <!-- Copyright -->
-					<ul class="copyright">
-						<li>&copy; LIMM version 1.0. Contents by SJIntern for Surban Jurong Technologies. All rights reserved.</li>
-						<li>Site Design - Copyright of : <a href="http://html5up.net">HTML5 UP</a></li>
-					</ul>
-        </footer>
+            <ul class="copyright list-inline">
+                <li>LIMM version 1.0. Contents by SJIntern for Surban Jurong Technologies. All rights reserved.</li>
+                <li>Site Design - Modified based on Prologue Template - Copyright of : <a href="http://html5up.net">HTML5 UP</a></li>
+            </ul>
+        </div>
     </div>
 
     @Scripts.Render("~/bundles/jquery")
-	@Scripts.Render("~/bundles/jsprologue")
+    @Scripts.Render("~/bundles/jsprologue")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+    <script>
+        $(document).ready(function () {
+            //register clicks
+            $('a#boxLink').click(function () {
+                location.href = $('a#boxLink').attr('data-action');
+            });
+            $('a#userLink').click(function () {
+                location.href = $('a#userLink').attr('data-action');
+            });
+            $('a#contactLink').click(function () {
+                location.href = $('a#contactLink').attr('data-action');
+            });
+
+            //initialise box input module
+            var boxinputmodulurl = $('#createBoxInfoDiv').data('url');
+            $('#createBoxInfoDiv').load(boxinputmodulurl);
+
+            //initialise mvc grid
+            [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+                new MvcGrid(element);
+            });
+
+
+        });
+
+        $(document).on('click', '.editbutton', (function (e) {
+            //prep ajax get for modal
+            var $modalDiv = $(document).find('#myModalBody');
+            var url = $(this).data('url');
+            $.get(url, function (data) {
+                $modalDiv.html(data);
+            });
+
+            $('#myModal').modal({ show: true });
+        }));
+
+        $(document).on('click','#saveEditButton', (function (e) {
+            //serialise form for JSON transfer
+            var formdata = $('#myEditBox').serializeArray();
+            var id = formdata.find((e) => e.name == 'id').value;
+            var formstr = JSON.stringify(formdata);
+
+            //prep ajax post
+            var $historyDiv = $('#myBoxHistory');
+            var url = '@Url.Action("SubmitBoxAjax", "BoxInfo")';
+            $.post(url, formdata, function (data) {
+                $historyDiv.html(data);
+            });
+
+            var boxhistorytitle = 'Box Preparation History (Last changed for ID:' + id +')';
+            $('#dashboardBoxHistoryTitle').text(boxhistorytitle);
+            $('#myModal').modal('hide');
+        }));
+
+    </script>
+
+    <style>
+        html, body {
+            overflow-x: hidden;
+        }
+
+        .mvc-grid th {
+            background-color: #6e5652 !important;
+        }
+
+        #header {
+            width: 21% !important;
+            padding: 4% 0 0 0 !important;
+            margin: 0 0 0 0 !important;
+        }
+
+        #main {
+            width: 96% !important;
+            padding: 0px 0px 0px 0px !important;
+            margin: 0% 0% 0 14.5% !important;
+        }
+
+        #footer {
+            margin: 0px !important;
+            padding: 3px 0px 0px 0px !important;
+        }
+
+        div.container div.body-content {
+            padding: 0 0 0 0 !important;
+            margin: 0 0 0 0 !important;
+        }
+
+        #main > section {
+            padding: 0em 0em 1em 0em !important;
+        }
+    </style>
 </body>
 </html>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using SJIP_LIMMV1.Helper;
+using SJIP_LIMMV1.Manager;
 
 namespace SJIP_LIMMV1.Controllers
 {
@@ -13,7 +13,7 @@ namespace SJIP_LIMMV1.Controllers
         // GET: Users
         public ActionResult Index()
         {
-            CommonFunc helper = new CommonFunc();
+            DashboardManager helper = new DashboardManager();
             if (User.Identity.IsAuthenticated)
             {
                 var user = User.Identity;

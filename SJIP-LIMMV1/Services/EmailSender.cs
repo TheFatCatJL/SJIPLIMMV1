@@ -12,8 +12,7 @@ namespace SJIP_LIMMV1.Services
 {
     public class EmailSender : IEmailSender
     {
-        private string apiKey = "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";
-        //private string apiKey = "2ALlqdlgSkCV6OMVtZDhNQ";
+        private string apiKey = "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";
         private string mykey { get; set; }
         //unused for now, eaving open for future implementations
         public ApplicationUser userFrom { get; set; }

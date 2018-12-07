@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using SJIP_LIMMV1.Helper;
+using SJIP_LIMMV1.Manager;
 using SJIP_LIMMV1.Models;
+
 
 namespace SJIP_LIMMV1.Controllers
 {
@@ -15,7 +16,7 @@ namespace SJIP_LIMMV1.Controllers
         public ActionResult Index()
         {
             ApplicationDbContext dbContext = new ApplicationDbContext();
-            CommonFunc helper = new CommonFunc();
+            DashboardManager helper = new DashboardManager();
             if(User.Identity.IsAuthenticated)
             {
                 var user = User.Identity;

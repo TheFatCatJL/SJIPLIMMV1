@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNet.Identity
+@using SJIP_LIMMV1.Models
 @{
     ViewBag.Title = "LIMM version 1.0";
     Layout = "~/Views/Shared/_LayoutPrologue.cshtml";
@@ -7,186 +8,84 @@
     Content modified by Jason Lim.
     Design based on Prologue by HTML5 UP permitted under the CCA 3.0 license (html5up.net/license) on 15 Nov 2018
 -->
-<!-- Header -->
-<div id="header" style="padding-top:40px;">
-
-    <div class="top">
-        <!-- Logo -->
-        <div id="logo">
-            <span class="image avatar48"><img src="~/images/lift1.png" alt="" /></span>
-            <h1 id="title" style="padding-top:5px;">@ViewBag.UserGreeting.ToString()</h1>
-            @{  
-                string linegreet = String.Format("{0} ({1})", @User.Identity.GetUserName().ToString(),@ViewBag.UserRoleName.ToString());
-             }
-            <p style="font-size:12px"> @Html.ActionLink(linegreet,"index","Manage",null, htmlAttributes: new { title = "Manage" })</p>
-        </div>
-
-        <!-- Nav -->
-        <nav id="nav">
-            <ul>
-                <li><a href="#top" id="top-link"><span class="icon fa-home">Intro</span></a></li>
-                <li><a href="#portfolio" id="portfolio-link"><span class="icon fa-th">Portfolio</span></a></li>
-                <li><a href="#about" id="about-link"><span class="icon fa-user">Manage Users</span></a></li>
-                <li><a href="#contact" id="contact-link"><span class="icon fa-envelope">Contact</span></a></li>
-            </ul>
-        </nav>
-
-    </div>
-
-    <div class="bottom">
-
-        <!-- Social Icons -->
-        <ul class="icons">
-            <li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
-            <li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
-            <li><a href="#" class="icon fa-github"><span class="label">Github</span></a></li>
-            <li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>
-            <li><a href="#" class="icon fa-envelope"><span class="label">Email</span></a></li>
-        </ul>
-
-    </div>
-
-</div>
-
 <!-- Main -->
 <div id="main">
-
     <!-- Intro -->
-    <section id="top" class="one dark cover">
-        <div class="container">
-
-            <header>
-                <h2 class="alt">
-                    Hi! I'm <strong>Prologue</strong>, a <a href="http://html5up.net/license">free</a> responsive<br />
-                    site template designed by <a href="http://html5up.net">HTML5 UP</a>.
-                </h2>
-                <p>
-                    Ligula scelerisque justo sem accumsan diam quis<br />
-                    vitae natoque dictum sollicitudin elementum.
-                </p>
-            </header>
-
-            <footer>
-                <a href="#portfolio" class="button scrolly">Magna Aliquam</a>
-            </footer>
-
+    <section id="top" class="one dark">
+        <header>
+            <h3 style="display:inline-block; margin-bottom:0px;">@Html.Label("Box Data Preparation", new { @style = "margin-bottom:0px;" }) </h3>
+            <span class="glyphicon glyphicon-briefcase" style="padding-left:5px"></span>
+        </header>
+        <div id="createBoxInfoDiv" data-url="@Url.Action("BoxInfoSectionPartial", "BoxInfo")">
+            <img src="~/images/Loading_icon.gif" alt="Loading box input module" /> 
         </div>
     </section>
 
     <!-- Portfolio -->
-    <section id="portfolio" class="two">
+    <section id="portfolio" class="three">
         <div class="container">
+            <h4 style="display:inline-block; margin-bottom:0px;" id="dashboardBoxHistoryTitle">Box Preparation History</h4>
+            <span class="glyphicon glyphicon-th-list" style="padding-left:5px"></span>
+            <div id="myBoxHistory">
+                @Html.AjaxGrid(Url.Action("BoxHistorySectionPartial", "BoxInfo"), new { id = "my-ajax-grid" })
+            </div>
+        </div>
 
-            <header>
-                <h2>Portfolio</h2>
-            </header>
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="dashboardBoxHistory" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Box Edit</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="myModalBody" class="modal-body">
+                        @Html.Action("BoxEditSectionSetup", "BoxInfo")
+                    </div>
 
-            <p>
-                Vitae natoque dictum etiam semper magnis enim feugiat convallis convallis
-                egestas rhoncus ridiculus in quis risus amet curabitur tempor orci penatibus.
-                Tellus erat mauris ipsum fermentum etiam vivamus eget. Nunc nibh morbi quis
-                fusce hendrerit lacus ridiculus.
-            </p>
-
-            <div class="row">
-                <div class="col-4 col-12-mobile">
-                    <article class="item">
-                        <a href="#" class="image fit"><img src="~/images/pic02.jpg" alt="" /></a>
-                        <header>
-                            <h3>Ipsum Feugiat</h3>
-                        </header>
-                    </article>
-                    <article class="item">
-                        <a href="#" class="image fit"><img src="~/images/pic03.jpg" alt="" /></a>
-                        <header>
-                            <h3>Rhoncus Semper</h3>
-                        </header>
-                    </article>
-                </div>
-                <div class="col-4 col-12-mobile">
-                    <article class="item">
-                        <a href="#" class="image fit"><img src="~/images/pic04.jpg" alt="" /></a>
-                        <header>
-                            <h3>Magna Nullam</h3>
-                        </header>
-                    </article>
-                    <article class="item">
-                        <a href="#" class="image fit"><img src="~/images/pic05.jpg" alt="" /></a>
-                        <header>
-                            <h3>Natoque Vitae</h3>
-                        </header>
-                    </article>
-                </div>
-                <div class="col-4 col-12-mobile">
-                    <article class="item">
-                        <a href="#" class="image fit"><img src="~/images/pic06.jpg" alt="" /></a>
-                        <header>
-                            <h3>Dolor Penatibus</h3>
-                        </header>
-                    </article>
-                    <article class="item">
-                        <a href="#" class="image fit"><img src="~/images/pic07.jpg" alt="" /></a>
-                        <header>
-                            <h3>Orci Convallis</h3>
-                        </header>
-                    </article>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="saveEditButton" type="button" class="btn btn-primary">Save changes</button>
+                    </div>
                 </div>
             </div>
-
         </div>
     </section>
-
-    <!-- About Me -->
-    <section id="about" class="three">
-        <div class="container">
-
-            <header>
-                <h2>About Me</h2>
-            </header>
-
-            <a href="#" class="image featured"><img src="~/images/pic08.jpg" alt="" /></a>
-
-            <p>
-                Tincidunt eu elit diam magnis pretium accumsan etiam id urna. Ridiculus
-                ultricies curae quis et rhoncus velit. Lobortis elementum aliquet nec vitae
-                laoreet eget cubilia quam non etiam odio tincidunt montes. Elementum sem
-                parturient nulla quam placerat viverra mauris non cum elit tempus ullamcorper
-                dolor. Libero rutrum ut lacinia donec curae mus vel quisque sociis nec
-                ornare iaculis.
-            </p>
-
-        </div>
-    </section>
-
-    <!-- Contact -->
-    <section id="contact" class="four">
-        <div class="container">
-
-            <header>
-                <h2>Contact</h2>
-            </header>
-
-            <p>
-                Elementum sem parturient nulla quam placerat viverra
-                mauris non cum elit tempus ullamcorper dolor. Libero rutrum ut lacinia
-                donec curae mus. Eleifend id porttitor ac ultricies lobortis sem nunc
-                orci ridiculus faucibus a consectetur. Porttitor curae mauris urna mi dolor.
-            </p>
-
-            <form method="post" action="#">
-                <div class="row">
-                    <div class="col-6 col-12-mobile"><input type="text" name="name" placeholder="Name" /></div>
-                    <div class="col-6 col-12-mobile"><input type="text" name="email" placeholder="Email" /></div>
-                    <div class="col-12">
-                        <textarea name="message" placeholder="Message"></textarea>
-                    </div>
-                    <div class="col-12">
-                        <input type="submit" value="Send Message" />
-                    </div>
-                </div>
-            </form>
-
-        </div>
-    </section>
-
 </div>
+<style>
+    .modal-content {
+        min-width: 800px;
+    }
+
+    td {
+        font-size: 14px !important;
+        align-content: center !important;
+    }
+
+    th {
+        font-size: small !important;
+    }
+
+    td > button {
+        font-size: smaller !important;
+        padding: 10px 20px 10px 20px !important;
+        margin: 0px !important;
+        background-color: #857cff !important;
+    }
+
+    .mvc-grid-pager button {
+        background-color: #a7c7e7 !important;
+    }
+
+    .mvc-grid-pager .disabled:hover {
+        background-color: #a7c7e7 !important;
+    }
+    .mvc-grid-pager .active:hover {
+        background-color: #3229bb !important;
+    }
+    .mvc-grid-pager .active {
+        background-color: #3229bb !important;
+    }
+</style>

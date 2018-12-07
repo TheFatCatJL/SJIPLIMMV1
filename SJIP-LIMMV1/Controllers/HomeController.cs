@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using SJIP_LIMMV1.Models;
-using SJIP_LIMMV1.Helper;
+using SJIP_LIMMV1.Manager;
 
 namespace SJIP_LIMMV1.Controllers
 {
@@ -18,16 +18,12 @@ namespace SJIP_LIMMV1.Controllers
             // Simple verification and redirection to login
             if (HttpContext.User.Identity.IsAuthenticated)
             {
-                string roleName;
-                // further implementations for cutomised dashboard viewmodels
-                using (var dbcontext = new ApplicationDbContext())
+                //ready the dashboard items
+                using (DashboardManager mycomfunc = new DashboardManager())
                 {
-                    string currentid = HttpContext.User.Identity.GetUserId();
-                    string RoleID = dbcontext.Users.Where(user => user.Id == currentid).FirstOrDefault().Roles.FirstOrDefault().RoleId;
-                    roleName = dbcontext.Roles.Where(r => r.Id == RoleID).FirstOrDefault().Name;
+                    ViewBag.UserRoleName = mycomfunc.generateUserRole(HttpContext);
+                    ViewBag.UserGreeting = mycomfunc.generateGreeting();
                 }
-                ViewBag.UserRoleName = roleName;
-                ViewBag.UserGreeting = new CommonFunc().generateGreeting();
                 return View();
             }
             else
@@ -44,9 +40,32 @@ namespace SJIP_LIMMV1.Controllers
         [Authorize]
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Title = "Contact Us";
+            ViewBag.Message = "Please leave us a message and we will get back to you shortly.";
+            ContactFormViewModel model = new ContactFormViewModel();
+            //ready the dashboard items
+            using (DashboardManager mycomfunc = new DashboardManager())
+            {
+                model.Name = String.Format("{0} ({1})", mycomfunc.generateUserName(HttpContext), mycomfunc.generateUserRole(HttpContext));
+                model.Email = mycomfunc.generateUserEmail(HttpContext);
+            }
+            return PartialView(model);
+        }
 
-            return View();
+        [Authorize]
+        [HttpPost]
+        public ActionResult Contact(ContactFormViewModel model)
+        {
+            if(!ModelState.IsValid)
+            {
+                ViewBag.Title = "Form Submission Error ";
+                ViewBag.Message = "Please check the below field(s).";
+                return View(model);
+            }
+            // TBA - To decide on the table details for further implementation
+            ViewBag.Title = "Contact Us";
+            ViewBag.Message = "Please leave us a message and we will get back to you shortly.";
+            return View(model);
         }
     }
 }

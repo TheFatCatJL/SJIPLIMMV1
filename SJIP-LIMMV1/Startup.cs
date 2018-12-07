@@ -11,6 +11,7 @@ using SJIP_LIMMV1.Models;
 using SJIP_LIMMV1.Services;
 
 [assembly: OwinStartupAttribute(typeof(SJIP_LIMMV1.Startup))]
+[assembly: log4net.Config.XmlConfigurator(ConfigFile ="Web.config",Watch=true)]
 namespace SJIP_LIMMV1
 {
     public partial class Startup
@@ -28,6 +29,8 @@ namespace SJIP_LIMMV1
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            services.AddLogging();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

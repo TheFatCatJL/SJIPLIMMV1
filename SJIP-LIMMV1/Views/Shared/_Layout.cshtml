@@ -3,9 +3,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - LIMMS V1.0</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/mvcgrid")
+    @Styles.Render("~/Content/cssgrid")
 
 </head>
 <body>
@@ -21,24 +23,42 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @Title = "Home" })</li>
+                    <li>@Html.ActionLink("Box", "BoxInfoModule", "BoxInfo", new { @Title = "Submit Box" })</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { @Title = "Contact" })</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
         </div>
     </div>
-    <div class="container body-content">
+    <div id="beforefooter" class="container body-content">
         @RenderBody()
-        <hr />
+    </div>
+    <div class="navbar navbar-fixed-bottom text-center" style="background: rgba(255,255,255,0.95);">
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>&copy; @DateTime.Now.ToString("ddd, dd/MMM/yyyy") - LIMM version 1.0. Contents by SJIntern for Surban Jurong Technologies.</p>
         </footer>
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        @RenderSection("scripts", required: false)
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
+    <script>
+        [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+            new MvcGrid(element);
+        });
+    </script>
+    <style>
+
+        #beforefooter {
+            padding-bottom: 20px !important;
+        }
+
+        div.container div.body-content {
+            width: 100% !important;
+            padding: 0 0 0 0 !important;
+            margin: 0 0 0 0 !important;
+        }
+    </style>
 </body>
 </html>
