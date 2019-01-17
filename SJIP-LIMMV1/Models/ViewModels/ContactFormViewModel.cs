@@ -10,7 +10,9 @@ namespace SJIP_LIMMV1.Models
 {
     public class ContactFormViewModel : IViewModel
     {
-        ViewDataDictionary extradetails;
+        [Key]
+        [Display(Name = "Id Key")]
+        public int Id { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Your email is required.")]
         [EmailAddress]
@@ -25,6 +27,16 @@ namespace SJIP_LIMMV1.Models
         [Display(Name = "Message")]
         public string Message { get; set; }
 
-        public ViewDataDictionary viewDataExtra { get => extradetails; set => extradetails = value; }
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var results = new List<ValidationResult>();
+            if(this.Email == null)
+                results.Add(new ValidationResult("Email must be valid/present for submission", new string[] { "Email" }));
+            if (this.Name == null)
+                results.Add(new ValidationResult("Name must be present for submission", new string[] { "Name" }));
+            if (this.Message == null)
+                results.Add(new ValidationResult("Message must be present for submission", new string[] { "Message" }));
+            return results;
+        }
     }
 }

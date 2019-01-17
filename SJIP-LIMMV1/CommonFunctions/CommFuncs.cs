@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace SJIP_LIMMV1.CommonFunctions
+namespace SJIP_LIMMV1.Common
 {
     public static class CommFuncs
     {
@@ -32,4 +32,6 @@ namespace SJIP_LIMMV1.CommonFunctions
             }
         }
     }
+
+   
 }

@@ -6,66 +6,76 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using SJIP_LIMMV1.Models;
 using SJIP_LIMMV1.Manager;
+using System.Threading.Tasks;
+using SJIP_LIMMV1.Manager.Fluent;
 
 namespace SJIP_LIMMV1.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            //default
-            ViewBag.UserRoleName = "Guest";
+
             // Simple verification and redirection to login
             if (HttpContext.User.Identity.IsAuthenticated)
             {
                 //ready the dashboard items
                 using (DashboardManager mycomfunc = new DashboardManager())
                 {
-                    ViewBag.UserRoleName = mycomfunc.generateUserRole(HttpContext);
-                    ViewBag.UserGreeting = mycomfunc.generateGreeting();
+                    ViewData = await mycomfunc.pageViewBagPrep(HttpContext, "Home");
                 }
                 return View();
             }
             else
-                return RedirectToAction("Login", "Account");
+            {
+                //default
+                using (DashboardManager mycomfunc = new DashboardManager())
+                {
+                    ViewData = await mycomfunc.pageViewBagPrep(HttpContext);
+                    return RedirectToAction("Login", "Account");
+                }
+            }
         }
 
-        public ActionResult About()
+        public async Task<ActionResult> About()
         {
-            ViewBag.Message = "Your application description page.";
-
+            using (DashboardManager mycomfunc = new DashboardManager())
+            {
+                ViewData = await mycomfunc.pageViewBagPrep(HttpContext, "About");
+            }
             return View();
         }
 
         [Authorize]
-        public ActionResult Contact()
+        public async Task<ActionResult> Contact()
         {
-            ViewBag.Title = "Contact Us";
-            ViewBag.Message = "Please leave us a message and we will get back to you shortly.";
-            ContactFormViewModel model = new ContactFormViewModel();
-            //ready the dashboard items
             using (DashboardManager mycomfunc = new DashboardManager())
             {
-                model.Name = String.Format("{0} ({1})", mycomfunc.generateUserName(HttpContext), mycomfunc.generateUserRole(HttpContext));
-                model.Email = mycomfunc.generateUserEmail(HttpContext);
+                ViewData = await mycomfunc.pageViewBagPrep(HttpContext, "Contact");
             }
+            ContactFormViewModel model = await new ViewModelManager<ContactFormViewModel>(HttpContext).GetNew();
             return PartialView(model);
         }
 
         [Authorize]
         [HttpPost]
-        public ActionResult Contact(ContactFormViewModel model)
+        public async Task<ActionResult> Contact(ContactFormViewModel model)
         {
             if(!ModelState.IsValid)
             {
-                ViewBag.Title = "Form Submission Error ";
-                ViewBag.Message = "Please check the below field(s).";
+                using (DashboardManager mycomfunc = new DashboardManager())
+                {
+                    ViewData = await mycomfunc.pageViewBagPrep(HttpContext, "ContactError");
+                }
                 return View(model);
             }
-            // TBA - To decide on the table details for further implementation
-            ViewBag.Title = "Contact Us";
-            ViewBag.Message = "Please leave us a message and we will get back to you shortly.";
-            return View(model);
+            await new ViewModelManager<ContactFormViewModel>(HttpContext).Post(model);
+            ContactFormViewModel newmodel = await new ViewModelManager<ContactFormViewModel>(HttpContext).GetNew();
+            using (DashboardManager mycomfunc = new DashboardManager())
+            {
+                ViewData = await mycomfunc.pageViewBagPrep(HttpContext, "ContactAgain");
+            }
+            return View("Contact",newmodel);
         }
     }
 }

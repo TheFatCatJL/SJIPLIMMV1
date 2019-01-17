@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using SJIP_LIMMV1.Manager;
@@ -11,7 +12,7 @@ namespace SJIP_LIMMV1.Controllers
     public class UsersController : Controller
     {
         // GET: Users
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             DashboardManager helper = new DashboardManager();
             if (User.Identity.IsAuthenticated)
@@ -20,11 +21,15 @@ namespace SJIP_LIMMV1.Controllers
                 ViewBag.Name = user.Name;
                 ViewBag.displayMenu = "No";
 
-                if(helper.isAdminUser(user))
+                if(await helper.isAdminUser(user))
                 {
                     ViewBag.displayMenu = "Yes";
                 }
                 helper.Dispose();
+                if(Request.IsAjaxRequest())
+                {
+                    return PartialView("Index");
+                }
                 return View();
             }
             else

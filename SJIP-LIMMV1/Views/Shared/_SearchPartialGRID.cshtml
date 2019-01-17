@@ -1,0 +1,56 @@
+﻿@using NonFactors.Mvc.Grid;
+@model IEnumerable<SJIP_LIMMV1.Models.BoxInfo>
+@{
+    Layout = null;
+}
+
+@(Html
+    .Grid(Model)
+    .Build(columns =>
+    {
+        columns.Add(model => $"<button type=button class=selectionbutton data-searchstr=\"{model.searchstring}\" " +
+        $"data-addressstr=\"{model.addressstring}\" data-lmpdstr=\"{model.lmpdstring}\" data-simcardstr=\"{model.simcardstring}\" data-uid=\"{model.id}\">Display</button>").Encoded(false).AppendCss("buttontd");
+        columns.Add(model => model.searchstring).Titled("Search String").RenderedAs(model => model.searchstring.Length > 15 ? model.searchstring.Substring(0,8) + ".." : model.searchstring);
+        columns.Add(model => model.addressstring).Titled("Address").RenderedAs(model => String.IsNullOrWhiteSpace(model.addressstring) ? "Not Matched" : "Matched");
+        columns.Add(model => model.simcardstring).Titled("SIM Card").RenderedAs(model => String.IsNullOrWhiteSpace(model.simcardstring) ? "Not Matched" : "Matched");
+        columns.Add(model => model.lmpdstring).Titled("LMPD").RenderedAs(model => String.IsNullOrWhiteSpace(model.lmpdstring) ? "Not Matched" : "Matched");
+    })
+    .WithSourceUrl(Url.Action("MainSearchGrid", "Search", new { @searchstring = Model.First().searchstring }))
+    .Empty("No data found")
+    .Id("my-ajax-grid")
+    .Pageable(pager =>
+    {
+        pager.PagesToDisplay = 5;
+        pager.RowsPerPage = 5;
+    })
+    .Filterable()
+    .Css("myButton")
+    .AppendCss("th")
+)
+@Scripts.Render("~/bundles/mvcgrid")
+@Styles.Render("~/Content/cssgrid")
+<style>
+    .myButton button {
+        font-size: smaller !important;
+        padding: 5px 10px 5px 10px !important;
+        margin: 0px !important;
+        border-radius: 10px 10px;
+    }
+
+    .myButton td {
+        font-size: small !important;
+    }
+
+    .myButton th {
+        font-size: small !important;
+    }
+
+    .buttontd {
+        font-size: small !important;
+        align-content: center !important;
+        text-align: center !important;
+    }
+</style>
+
+
+

@@ -1,12 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>LIMM version 1.0</title>
+    <title>@ViewBag.Title</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     @Styles.Render("~/Content/cssprologue")
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/mvcgrid")
+    @Styles.Render("~/Content/cssgrid")
 
 </head>
 <!--
@@ -26,9 +28,12 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Box", "BoxInfoSection", "BoxInfo")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @Title = "Home" })</li>
+                    <li>@Html.ActionLink("Add Box", "PreBoxAdd", "BoxInfo", new { area = "" }, new { @Title = "Submit Box" })</li>
+                    <li>@Html.ActionLink("Search", "MainSearch", "Search", new { area = "" }, new { @Title = "Search Box Details" })</li>
+                    <li>@Html.ActionLink("Commissioned Box Submission", "ComRecForm", "BoxInfo", new { area = "" }, new { @Title = "Commissioning Record" })</li>
+                    <li>@Html.ActionLink("Submission History", "ComRecHistory", "BoxInfo", new { area = "" }, new { @Title = "Commissioning Record History" })</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @Title = "Contact" })</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -41,16 +46,13 @@
             <div id="logo">
                 <span class="image avatar48"><img src="~/images/lift1.png" alt="" /></span>
                 <h1 id="title" style="padding-top:5px;">@ViewBag.UserGreeting.ToString()</h1>
-                @using Microsoft.AspNet.Identity
-                @{
-                    string linegreet = String.Format("{0} ({1})", @User.Identity.GetUserName().ToString(), @ViewBag.UserRoleName.ToString());
-                }
+                @{ string linegreet = ViewBag.UserLineGreet == null ? "Guest" : ViewBag.UserLineGreet.ToString(); }
                 <p style="font-size:12px"> @Html.ActionLink(linegreet, "index", "Manage", null, htmlAttributes: new { title = "Manage" })</p>
             </div>
             <!-- Nav -->
             <nav id="nav">
                 <ul>
-                    <li><a href="\#" data-action=@Url.Action("BoxInfoSection", "BoxInfo") id="boxLink"><span class="glyphicon glyphicon-briefcase"></span>Box Data Preperation</a></li>
+                    <li><a href="\#" data-action=@Url.Action("Index", "Home") id="boxLink"><span class="glyphicon glyphicon-briefcase"></span>Box Data Preperation</a></li>
                     <li><a href="\#" data-action=@Url.Action("Index", "Manage") id="userLink"><span class="glyphicon glyphicon-user"></span>User</a></li>
                     <li><a href="\#" data-action=@Url.Action("Contact", "Home") id="contactLink"><span class='glyphicon glyphicon-envelope'></span>Contact</a></li>
                 </ul>
@@ -58,111 +60,208 @@
         </div>
     </div>
 
-    <div class="container body-content">
+    <div id="mainBodyContent" class="container body-content">
         @RenderBody()
-        <div class="navbar navbar-fixed-bottom text-center" id="footer">
-            <!-- Copyright -->
-            <ul class="copyright list-inline">
-                <li>LIMM version 1.0. Contents by SJIntern for Surban Jurong Technologies. All rights reserved.</li>
-                <li>Site Design - Modified based on Prologue Template - Copyright of : <a href="http://html5up.net">HTML5 UP</a></li>
-            </ul>
-        </div>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/jsprologue")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
-    <script>
-        $(document).ready(function () {
-            //register clicks
-            $('a#boxLink').click(function () {
-                location.href = $('a#boxLink').attr('data-action');
-            });
-            $('a#userLink').click(function () {
-                location.href = $('a#userLink').attr('data-action');
-            });
-            $('a#contactLink').click(function () {
-                location.href = $('a#contactLink').attr('data-action');
-            });
+            <div class="navbar navbar-fixed-bottom text-center" id="footer">
+                <!-- Copyright -->
+                <ul class="copyright list-inline">
+                    <li>LIMM version 1.0. Contents by SJIntern for Surban Jurong Technologies. All rights reserved.</li>
+                    <li>Site Design - Modified based on Prologue Template - Copyright of : <a href="http://html5up.net">HTML5 UP</a></li>
+                </ul>
+            </div>
 
-            //initialise box input module
-            var boxinputmodulurl = $('#createBoxInfoDiv').data('url');
-            $('#createBoxInfoDiv').load(boxinputmodulurl);
+            @Scripts.Render("~/bundles/jquery")
+            @Scripts.Render("~/bundles/jsprologue")
+            @Scripts.Render("~/bundles/bootstrap")
+            @RenderSection("scripts", required: false)
+<script>
+    $(document).ready(function () {
+        //initialise mvc grid
+        MVCGRID();
+    });
 
-            //initialise mvc grid
-            [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
-                new MvcGrid(element);
-            });
+    function MVCGRID() {
+        [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+            new MvcGrid(element);
+        });
+    }
 
+    //Side menu bar operations
+    $(document).on('click', 'a#boxLink', (function (e) {
+        var $changeDiv = $('#mainBodyContent');
+        var url = $('a#boxLink').attr('data-action');
+        $.get(url, function (data) {
+            $changeDiv.html(data);
+        });
+    }));
 
+    $(document).on('click', 'a#searchLink', (function (e) {
+        var $changeDiv = $('#mainBodyContent');
+        var url = $('a#searchLink').attr('data-action');
+        $.get(url, function (data) {
+            $changeDiv.html('<div id="main"><div class="container">' + data + '</div></div>');
+        });
+    }));
+
+    $(document).on('click', 'a#userLink', (function (e) {
+        var $changeDiv = $('#mainBodyContent');
+        var url = $('a#userLink').attr('data-action');
+        $.get(url, function (data) {
+            $changeDiv.html('<div id="main"><div class="container">' + data + '</div></div>');
+        });
+    }));
+
+    $(document).on('click', 'a#contactLink', (function (e) {
+        var $changeDiv = $('#mainBodyContent');
+        var url = $('a#contactLink').attr('data-action');
+        $.get(url, function (data) {
+            $changeDiv.html('<div id="main"><div class="container">' + data + '</div></div>');
+        });
+    }));
+
+    // Box History Partial Buttons
+    $(document).on('click', '.editbutton', (function (e) {
+        //prep ajax get for modal
+        var $modalDiv = $(document).find('#myModalBody');
+        var url = $(this).data('url');
+        $.get(url, function (data) {
+            $modalDiv.html(data);
+        }).done(() => {
+            $('#addMoreButton').hide();
+            $('#saveEditButton').text('Save Changes');
+            $('#modalHeader').text('Edit Box Information');
+        });
+        $('#myModal').modal({ show: true });
+    }));
+
+    $(document).on('click', '.deletebutton', (function (e) {
+        //prep ajax get for modal
+        var $historyDiv = $('#myBoxHistory');
+        var url = $(this).data('url');
+        $.get(url, function (data) {
+            $historyDiv.html(data);
+            setTimeout(
+                function () {
+                    MVCGRID();
+                }, 1000);
+        });
+    }));
+
+    // New Modal - Add Box Button
+    $(document).on('click', '#addBoxButton', (function (e) {
+        //prep ajax get
+        var $modalDiv = $(document).find('#myModalBody');
+        var url = '@Url.Action("PreBoxAddPartial", "BoxInfo")';
+        $.get(url, function (data) {
+            $modalDiv.html(data);
+        }).done(() => {
+            $('#saveEditButton').text('Add & Close');
+            $('#addMoreButton').show();
+            $('#modalHeader').text('Add New Box');            
+        });
+        $('#myModal').modal({ show: true });
+    }));
+
+    // New Modal - AddMore Button
+    $(document).on('click','#addMoreButton', (function (e) {
+        //serialise form for JSON transfer
+        var formdata = $('#myBoxForm').serializeArray();
+        var id = formdata.find((e) => e.name == 'Id').value;
+        var formstr = JSON.stringify(formdata);
+
+        //prep ajax post
+        var $historyDiv = $('#myBoxHistory');
+        var url = '@Url.Action("PreBoxSubmitAjax", "BoxInfo")';
+        $.post(url, formdata, function (data) {
+            $historyDiv.html(data);
+            setTimeout(
+                function () {
+                    MVCGRID();
+                }, 1000);
         });
 
-        $(document).on('click', '.editbutton', (function (e) {
-            //prep ajax get for modal
-            var $modalDiv = $(document).find('#myModalBody');
-            var url = $(this).data('url');
-            $.get(url, function (data) {
-                $modalDiv.html(data);
-            });
+        var $modalDiv = $(document).find('#myModalBody');
+        var url = '@Url.Action("PreBoxAddPartial", "BoxInfo")';
+        $.get(url, function (data) {
+            $modalDiv.html(data);
+        }).done(() => {
+            //$('#saveEditButton').text('Add & Close');
+            //$('#addMoreButton').show();
+            //$('#modalHeader').text('Add New Box');            
+        });
+        //$('#myModal').modal({ show: true });
+        //$('#myModal').modal('hide');
+        //var boxhistorytitle = 'Box Preparation History (Last changed for ID:' + id +')';
+        //$('#dashboardBoxHistoryTitle').text(boxhistorytitle);
+        
+    }));
 
-            $('#myModal').modal({ show: true });
-        }));
+    // Edit Modal - Save button
+    $(document).on('click','#saveEditButton', (function (e) {
+        //serialise form for JSON transfer
+        var formdata = $('#myBoxForm').serializeArray();
+        var id = formdata.find((e) => e.name == 'Id').value;
+        var formstr = JSON.stringify(formdata);
 
-        $(document).on('click','#saveEditButton', (function (e) {
-            //serialise form for JSON transfer
-            var formdata = $('#myEditBox').serializeArray();
-            var id = formdata.find((e) => e.name == 'id').value;
-            var formstr = JSON.stringify(formdata);
+        //prep ajax post
+        var $historyDiv = $('#myBoxHistory');
+        var url = '@Url.Action("PreBoxSubmitAjax", "BoxInfo")';
+        $.post(url, formdata, function (data) {
+            $historyDiv.html(data);
+            setTimeout(
+                function () {
+                    MVCGRID();
+                }, 1000);
+        });
+        $('#myModal').modal('hide');
+        //var boxhistorytitle = 'Box Preparation History (Last changed for ID:' + id +')';
+        //$('#dashboardBoxHistoryTitle').text(boxhistorytitle);
+        
+    }));
 
-            //prep ajax post
-            var $historyDiv = $('#myBoxHistory');
-            var url = '@Url.Action("SubmitBoxAjax", "BoxInfo")';
-            $.post(url, formdata, function (data) {
-                $historyDiv.html(data);
-            });
+</script>
 
-            var boxhistorytitle = 'Box Preparation History (Last changed for ID:' + id +')';
-            $('#dashboardBoxHistoryTitle').text(boxhistorytitle);
-            $('#myModal').modal('hide');
-        }));
+<style>
+    html, body {
+        overflow-x: hidden;
+    }
 
-    </script>
+    .mvc-grid th {
+        background-color: #6e5652 !important;
+    }
 
-    <style>
-        html, body {
-            overflow-x: hidden;
-        }
+    #header {
+        width: 21% !important;
+        padding: 4% 0 0 0 !important;
+        margin: 0 0 0 0 !important;
+    }
 
-        .mvc-grid th {
-            background-color: #6e5652 !important;
-        }
+    #main {
+        width: 96% !important;
+        padding: 0px 0px 0px 0px !important;
+        margin: 0% 0% 0 14.5% !important;
+    }
 
-        #header {
-            width: 21% !important;
-            padding: 4% 0 0 0 !important;
-            margin: 0 0 0 0 !important;
-        }
+    #footer {
+        margin: 0px !important;
+        padding: 3px 0px 0px 0px !important;
+    }
 
-        #main {
-            width: 96% !important;
-            padding: 0px 0px 0px 0px !important;
-            margin: 0% 0% 0 14.5% !important;
-        }
+    div.container div.body-content {
+        padding: 0 0 0 0 !important;
+        margin: 0 0 0 0 !important;
+    }
 
-        #footer {
-            margin: 0px !important;
-            padding: 3px 0px 0px 0px !important;
-        }
+    #main > section {
+        padding: 0em 0em 1em 0em !important;
+    }
 
-        div.container div.body-content {
-            padding: 0 0 0 0 !important;
-            margin: 0 0 0 0 !important;
-        }
+    .form-horizontal .control-label {
+        text-align:initial;
+    }
 
-        #main > section {
-            padding: 0em 0em 1em 0em !important;
-        }
-    </style>
+</style>
 </body>
 </html>

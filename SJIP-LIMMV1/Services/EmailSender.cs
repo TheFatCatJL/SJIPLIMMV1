@@ -12,9 +12,9 @@ namespace SJIP_LIMMV1.Services
 {
     public class EmailSender : IEmailSender
     {
-        private string apiKey = "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";
+        private string apiKey = ""; // change this to your SendGrid APIKey (full one, not the one that is used for website identifier)
         private string mykey { get; set; }
-        //unused for now, eaving open for future implementations
+        //unused for now, leaving open for future implementations
         public ApplicationUser userFrom { get; set; }
         public string userFromEmail {get;set;}
         public string userFromName { get; set; }

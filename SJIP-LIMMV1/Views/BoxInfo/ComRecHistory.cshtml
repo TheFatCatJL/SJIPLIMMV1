@@ -1,0 +1,31 @@
+﻿@using NonFactors.Mvc.Grid;
+@model IEnumerable<SJIP_LIMMV1.Models.CommissionRecordVM>
+@{
+    ViewBag.Title = "Commissioned Boxes Submission History";
+}
+
+@(Html
+        .Grid("_nestedVMSPartialGRID", Model)
+        .Build(columns =>
+        {
+            columns.Add(model => $"<button type=button class=\"editbutton btn-primary\" data-url=\"{Url.Action("ComRecFormGet", "BoxInfo", new { @comrecid = model.Id })}\">Edit</button>").Encoded(false);
+            columns.Add(model => model.Id).Titled("ID");
+            columns.Add(model => model.supname).Titled("Supervisor Name");
+            columns.Add(model => model.status).Titled("Status");
+            columns.Add(model => model.history).Titled("History");
+            columns.Add(model => model.comment).Titled("Comment");
+            columns.Add(model => model.comrecorddate).Titled("Reported Date");
+            columns.Add(model => $"<button type=button class=togglebutton data-hiddenid=0>{model.vms.Count} record(s) found</button>").Titled("Records").Encoded(false);
+            columns.Add().Encoded(false).RenderedAs(model => model.status == "Report Pending" ?
+                                        $"<button type=button class=deletebutton data-url=\"{Url.Action("ComRecDelete", "BoxInfo", new { @id = model.Id })}\">Delete</button>" :
+                                        "");
+        })
+        .Empty("No data found")
+        .Pageable(pager =>
+        {
+            pager.PagesToDisplay = 5;
+            pager.RowsPerPage = 4;
+        })
+)
+
+

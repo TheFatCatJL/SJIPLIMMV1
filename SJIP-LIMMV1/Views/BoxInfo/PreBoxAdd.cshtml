@@ -1,0 +1,376 @@
+﻿@model SJIP_LIMMV1.Models.PreBoxInfoViewModel
+
+@{
+    ViewBag.Title = "Pre-commission Box Submission";
+}
+
+@Styles.Render("~/Content/css")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/jsprologue")
+@Scripts.Render("~/bundles/mvcgrid")
+@Styles.Render("~/Content/cssgrid")
+@Scripts.Render("~/bundles/bootstrap")
+
+<div class="table">
+
+    @*Title header*@
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Register Box(es)</h2>
+        </div>
+    </div>
+
+    @*GridView*@
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9 text-center">
+                <div class="col-md-4 text-left">
+                    <button type="button" id="addBoxButton"><span>Add Box</span></button>
+                </div>
+                <div class="col-md-8">
+                    <h3 id="dashboardBoxHistoryTitle"> Pre-commission Box History <span class="glyphicon glyphicon-th-list" style="padding:0px 0px 0px 5px;"></span> </h3>
+                </div>
+            </div>
+        </div>
+        <div id="myBoxHistory">
+            @Html.AjaxGrid(Url.Action("PreBoxHistoryPartial", "BoxInfo"), new { id = "my-ajax-grid" })
+        </div>
+    </div>
+
+    @*Modal*@
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="dashboardBoxHistory" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <button type="button" class="btn close" data-dismiss="modal" aria-label="Close" title="Close without saving">
+                    <span aria-hidden="false">&times;</span>
+                </button>
+                <div class="modal-header">
+                    <h3 id="modalHeader" class="modal-title">
+                        Box Edit
+                    </h3>
+                </div>
+                <div id="myModalBody" class="modal-body">
+                    @Html.Action("PreBoxModalSetupNonAsync", "BoxInfo")
+                </div>
+
+                <div class="modal-footer">
+                    <button id="saveEditButton" type="button" class="btn btn-primary">Save changes</button>
+                    <button id="addMoreButton" type="button" class="btn btn-primary">Add More</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        //initialise mvc grid
+        MVCGRID();
+    });
+
+    function MVCGRID() {
+        [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+            new MvcGrid(element);
+        });
+    }
+
+    // Box History Partial Buttons
+    $(document).on('click', '.editbutton', (function (e) {
+        //prep ajax get for modal
+        var $modalDiv = $(document).find('#myModalBody');
+        var url = $(this).data('url');
+        $.get(url, function (data) {
+            $modalDiv.html(data);
+        }).done(() => {
+            $('#addMoreButton').hide();
+            $('#saveEditButton').text('Save Changes');
+            $('#modalHeader').text('Edit Box Information');
+        });
+        $('#myModal').modal({ show: true });
+    }));
+
+    $(document).on('click', '.deletebutton', (function (e) {
+        //prep ajax get for modal
+        var $historyDiv = $('#myBoxHistory');
+        var url = $(this).data('url');
+        $.get(url, function (data) {
+            $historyDiv.html(data);
+            setTimeout(
+                function () {
+                    MVCGRID();
+                }, 1000);
+        });
+    }));
+
+    // New Modal - Add Box Button
+    $(document).on('click', '#addBoxButton', (function (e) {
+        //prep ajax get
+        var $modalDiv = $(document).find('#myModalBody');
+        var url = '@Url.Action("PreBoxAddPartial", "BoxInfo")';
+        $.get(url, function (data) {
+            $modalDiv.html(data);
+        }).done(() => {
+            $('#saveEditButton').text('Add & Close');
+            $('#addMoreButton').show();
+            $('#modalHeader').text('Add New Box');
+
+            var lmpdbox = $(document).find('#lmpdtextbox');
+            var simbox = $(document).find('#simtextbox');
+            var telcoddl = $(document).find('#telcoddl');
+            var jsonddl = $(document).find('#jsonddl');
+            lmpdbox.val = "";
+            simbox.val = "";
+
+            //bind input event to lmpdtext box
+            $(lmpdbox).on('input', function () {
+                var numchar = $(lmpdbox).val().length;
+                if (numchar > 10) {
+                    setTimeout(
+                        function () {
+                            $(simbox).focus();
+                        }, 1000);
+                }
+                if (numchar < 5) {
+                    //future implementation
+                }
+                else {
+                    setTimeout(
+                        function () {
+                            $(simbox).focus();
+                        }, 10000);
+                }
+            });
+
+            //bind input event to simtext box
+            $(simbox).on('input', function () {
+                var numchar = $(simbox).val().length;
+                if (numchar > 10) {
+                    setTimeout(
+                        function () {
+                            $(telcoddl).focus();
+                            $(telcoddl).val("Tata");
+                            //chaining the jsonddl here sinc it does not make sense to delay the json ddl selector after a default Tata telco select
+                            $(jsonddl).focus();
+                        }, 1000);
+                }
+                if (numchar < 5) {
+                    //future implementation
+                }
+                else {
+                    setTimeout(
+                        function () {
+                            $(telcoddl).focus();
+                            $(telcoddl).val("Tata");
+                            //chaining the jsonddl here sinc it does not make sense to delay the json ddl selector after a default Tata telco select
+                            $(jsonddl).focus();
+                        }, 10000);
+                }
+            });
+        });
+        $('#myModal').modal({ show: true });
+        //upon modal pop (set)
+        setTimeout(
+            function () {
+                $('#lmpdtextbox').focus();
+            }, 1000);
+    }));
+
+
+
+
+    // New Modal - AddMore Button
+    $(document).on('click','#addMoreButton', (function (e) {
+        //serialise form for JSON transfer
+        var formdata = $('#myBoxForm').serializeArray();
+        var id = formdata.find((e) => e.name == 'Id').value;
+        var formstr = JSON.stringify(formdata);
+
+        //prep ajax post
+        var $historyDiv = $('#myBoxHistory');
+        var url = '@Url.Action("PreBoxSubmitAjax", "BoxInfo")';
+        $.post(url, formdata, function (data) {
+            $historyDiv.html(data);
+            setTimeout(
+                function () {
+                    MVCGRID();
+                }, 1000);
+        });
+
+        var $modalDiv = $(document).find('#myModalBody');
+        var url = '@Url.Action("PreBoxAddPartial", "BoxInfo")';
+        $.get(url, function (data) {
+            $modalDiv.html(data);
+        }).done(() => {
+            var lmpdbox = $(document).find('#lmpdtextbox');
+            var simbox = $(document).find('#simtextbox');
+            var telcoddl = $(document).find('#telcoddl');
+            var jsonddl = $(document).find('#jsonddl');
+            lmpdbox.val = "";
+            simbox.val = "";
+
+            $(lmpdbox).on('input', function () {
+                var numchar = $(lmpdbox).val().length;
+                if (numchar > 10) {
+                    setTimeout(
+                        function () {
+                            $(simbox).focus();
+                        }, 1000);
+                }
+                if (numchar < 5) {
+                    //future implementation
+                }
+                else {
+                    setTimeout(
+                        function () {
+                            $(simbox).focus();
+                        }, 10000);
+                }
+            });
+
+            //bind input event to simtext box
+            $(simbox).on('input', function () {
+                var numchar = $(simbox).val().length;
+                if (numchar > 10) {
+                    setTimeout(
+                        function () {
+                            $(telcoddl).focus();
+                            $(telcoddl).val("Tata");
+                            //chaining the jsonddl here sinc it does not make sense to delay the json ddl selector after a default Tata telco select
+                            $(jsonddl).focus();
+                        }, 1000);
+                }
+                if (numchar < 5) {
+                    //future implementation
+                }
+                else {
+                    setTimeout(
+                        function () {
+                            $(telcoddl).focus();
+                            $(telcoddl).val("Tata");
+                            //chaining the jsonddl here sinc it does not make sense to delay the json ddl selector after a default Tata telco select
+                            $(jsonddl).focus();
+                        }, 10000);
+                }
+            });
+
+            setTimeout(
+                function () {
+                    $('#lmpdtextbox').focus();
+                }, 1000);
+        });
+    }));
+
+    // Edit Modal - Save button
+    $(document).on('click','#saveEditButton', (function (e) {
+        //serialise form for JSON transfer
+        var formdata = $('#myBoxForm').serializeArray();
+        var id = formdata.find((e) => e.name == 'Id').value;
+        var formstr = JSON.stringify(formdata);
+
+        //prep ajax post
+        var $historyDiv = $('#myBoxHistory');
+        var url = '@Url.Action("PreBoxSubmitAjax", "BoxInfo")';
+        $.post(url, formdata, function (data) {
+            $historyDiv.html(data);
+            setTimeout(
+                function () {
+                    MVCGRID();
+                }, 1000);
+        });
+        $('#myModal').modal('hide');
+    }));
+
+</script>
+
+<style>
+    .editbutton {
+        background-color: #8ebebc !important;
+        color: white !important;
+        border-style: none !important;
+        padding: 5px 10px 5px 10px !important;
+        margin: 0px !important;
+        border-radius: 10px 10px;
+    }
+
+    .deletebutton {
+        background-color: #f31010 !important;
+        color: white !important;
+        border-style: none !important;
+        padding: 5px 10px 5px 10px !important;
+        margin: 0px !important;
+        border-radius: 10px 10px;
+    }
+
+    .form-control {
+        width:initial !important;      
+    }
+
+    #addBoxButton {
+        display: inline-block;
+        border-radius: 10px 10px;
+        background-color: #62de3b;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 16px;
+        padding: 7px 15px 7px 15px;
+        margin: 18px 0px 0px 10px;
+        width: 120px;
+        transition: all 0.5s;
+        cursor: pointer;
+    }
+
+        #addBoxButton span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+
+            #addBoxButton span:after {
+                content: '\00bb';
+                position: absolute;
+                opacity: 0;
+                top: 0;
+                right: -20px;
+                transition: 0.5s;
+            }
+
+        #addBoxButton:hover span {
+            padding-right: 25px;
+        }
+
+            #addBoxButton:hover span:after {
+                opacity: 1;
+                right: 0;
+            }
+
+    button.close {
+        background: #f5101d !important;
+        padding: 5px 10px 5px 10px;
+        border-radius: 50%;
+        float: right;
+        margin: 10px 10px 0px 0px;
+    }
+
+    .deletebutton {
+        background-color: #f31010 !important;
+    }
+
+    .mvc-grid-pager button {
+        background-color: #a7c7e7 !important;
+    }
+
+    .mvc-grid-pager .disabled:hover {
+        background-color: #a7c7e7 !important;
+    }
+
+    .mvc-grid-pager .active:hover {
+        background-color: #3229bb !important;
+    }
+
+    .mvc-grid-pager .active {
+        background-color: #3229bb !important;
+    }
+</style>

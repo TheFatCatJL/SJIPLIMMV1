@@ -1,53 +1,52 @@
 ﻿@using Microsoft.AspNet.Identity
 @using SJIP_LIMMV1.Models
 @{
-    ViewBag.Title = "LIMM version 1.0";
     Layout = "~/Views/Shared/_LayoutPrologue.cshtml";
 }
 <!--
     Content modified by Jason Lim.
     Design based on Prologue by HTML5 UP permitted under the CCA 3.0 license (html5up.net/license) on 15 Nov 2018
 -->
-<!-- Main -->
 <div id="main">
-    <!-- Intro -->
-    <section id="top" class="one dark">
-        <header>
-            <h3 style="display:inline-block; margin-bottom:0px;">@Html.Label("Box Data Preparation", new { @style = "margin-bottom:0px;" }) </h3>
-            <span class="glyphicon glyphicon-briefcase" style="padding-left:5px"></span>
-        </header>
-        <div id="createBoxInfoDiv" data-url="@Url.Action("BoxInfoSectionPartial", "BoxInfo")">
-            <img src="~/images/Loading_icon.gif" alt="Loading box input module" /> 
-        </div>
-    </section>
 
-    <!-- Portfolio -->
-    <section id="portfolio" class="three">
+    <!-- Grid VIew-->
+    <section id="GridView" class="three">
         <div class="container">
-            <h4 style="display:inline-block; margin-bottom:0px;" id="dashboardBoxHistoryTitle">Box Preparation History</h4>
-            <span class="glyphicon glyphicon-th-list" style="padding-left:5px"></span>
-            <div id="myBoxHistory">
-                @Html.AjaxGrid(Url.Action("BoxHistorySectionPartial", "BoxInfo"), new { id = "my-ajax-grid" })
+            <div class="row">
+                <div class="col-md-9 text-center">
+                    <div class="col-md-4 text-left">
+                        <button type="button" id="addBoxButton"><span>Add Box</span></button>
+                    </div>
+                    <div class="col-md-8">
+                        <h3 id="dashboardBoxHistoryTitle"> Pre-commission Box History <span class="glyphicon glyphicon-th-list" style="padding:0px 0px 0px 5px;"></span> </h3>                        
+                    </div>
+                </div>
+            </div>
+            <div id="myBoxHistory">                
+                @Html.AjaxGrid(Url.Action("PreBoxHistoryPartial", "BoxInfo"), new { id = "my-ajax-grid" })
             </div>
         </div>
 
-        <!-- Modal -->
+
+        <!-- Modal - currently the same modal is used for edit and add-->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="dashboardBoxHistory" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
+                    <button type="button" class="btn close" data-dismiss="modal" aria-label="Close" title="Close without saving">
+                        <span aria-hidden="false">&times;</span>
+                    </button>
                     <div class="modal-header">
-                        <h3 class="modal-title">Box Edit</h3>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <h3 id="modalHeader" class="modal-title">
+                            Box Edit
+                        </h3>
                     </div>
                     <div id="myModalBody" class="modal-body">
-                        @Html.Action("BoxEditSectionSetup", "BoxInfo")
+                        @Html.Action("PreBoxModalSetupNonAsync", "BoxInfo")
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button id="saveEditButton" type="button" class="btn btn-primary">Save changes</button>
+                        <button id="addMoreButton" type="button" class="btn btn-primary">Add More</button>
                     </div>
                 </div>
             </div>
@@ -59,20 +58,56 @@
         min-width: 800px;
     }
 
-    td {
-        font-size: 14px !important;
-        align-content: center !important;
+    #addBoxButton {
+        display: inline-block;
+        border-radius: 10px 10px;
+        background-color: #62de3b;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 16px;
+        padding: 7px 15px 7px 15px;
+        margin: 18px 0px 0px 10px;
+        width: 120px;
+        transition: all 0.5s;
+        cursor: pointer;
     }
 
-    th {
-        font-size: small !important;
+    #addBoxButton span {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        transition: 0.5s;
     }
 
-    td > button {
-        font-size: smaller !important;
-        padding: 10px 20px 10px 20px !important;
-        margin: 0px !important;
-        background-color: #857cff !important;
+    #addBoxButton span:after {
+        content: '\00bb';
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+    }
+
+    #addBoxButton:hover span {
+        padding-right: 25px;
+    }
+
+    #addBoxButton:hover span:after {
+        opacity: 1;
+        right: 0;
+    }
+
+    button.close {
+        background: #f5101d !important;
+        padding: 5px 10px 5px 10px;
+        border-radius: 50%;
+        float: right;
+        margin: 10px 10px 0px 0px;
+    }
+
+    .deletebutton {
+        background-color: #f31010 !important;
     }
 
     .mvc-grid-pager button {

@@ -1,4 +1,6 @@
-﻿using SJIP_LIMMV1.Repository;
+﻿using AutoMapper;
+using SJIP_LIMMV1.Models;
+using SJIP_LIMMV1.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -9,6 +11,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using SJIP_LIMMV1.App_Start;
 
 namespace SJIP_LIMMV1
 {
@@ -22,8 +25,9 @@ namespace SJIP_LIMMV1
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             log4net.Config.XmlConfigurator.Configure(new FileInfo(Server.MapPath("~/Web.config")));
-            // drop temp DB if any changes - remove when going into deployment
-            System.Data.Entity.Database.SetInitializer<BoxInfoContext>(new System.Data.Entity.DropCreateDatabaseIfModelChanges<BoxInfoContext>());
+            Mapper.Initialize(cfg => {
+                cfg.AddProfile<BoxMapProfile>();
+            });
         }
     }
 }

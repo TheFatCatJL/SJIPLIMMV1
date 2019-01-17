@@ -1,0 +1,76 @@
+﻿@model SJIP_LIMMV1.Models.ComBoxInfoViewModel
+
+@{
+    Layout = null;
+}
+
+<div>
+    <style>
+        div.row {
+            padding: 10px 0px 10px 0px !important;
+        }
+
+        .customTxtArea {
+            height: 120px !important;
+            resize: none;
+        }
+    </style>
+    @using (Html.BeginForm("ComBoxSubmitAjax", "BoxInfo", null, FormMethod.Post, new { @id = "myBoxForm", @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken();
+        <div class="form-group">
+            <div class="row col-md-12">
+                <div class="col-md-3">
+                    @Html.LabelFor(m => m.lmpdnum, new { @class = "control-label" })
+                </div>
+                <div class="col-md-9">
+                    @Html.Label(Model.lmpdnum, new { @class = "control-label", @value = Model.lmpdnum, @text = Model.lmpdnum, @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="row col-md-12">
+                <div class="col-md-3">
+                    @Html.LabelFor(m => m.rptpostalcode, new { @class = "control-label" })
+                </div>
+                <div class="col-md-9">
+                    @Html.EditorFor(m => m.rptpostalcode, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(m => m.rptpostalcode, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row col-md-12">
+                <div class="col-md-3">
+                    @Html.LabelFor(m => m.rptlift, new { @class = "control-label" })
+                </div>
+                <div class="col-md-9">
+                    @{ var selectLift = Model.liftlist.Select(s => new SelectListItem { Value = s, Text = s }).ToList(); }
+                    @Html.DropDownListFor(m => m.rptlift, selectLift, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="row col-md-12">
+                <div class="col-md-3">
+                    @Html.LabelFor(m => m.rptcomdate, new { @class = "control-label" })
+                </div>
+                <div class="col-md-9">
+                    @Html.TextBoxFor(m => m.rptcomdate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "form-control datepicker", @Value = Model.rptcomdate.GetValueOrDefault(DateTime.Now).ToString("yyyy-MM-dd") })
+                    @Html.ValidationMessageFor(m => m.rptcomdate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row col-md-12">
+                <div class="col-md-3">
+                    @Html.LabelFor(m => m.rptcomment, new { @class = "control-label" })
+                </div>
+                <div class="col-md-9">
+                    @Html.TextAreaFor(m => m.rptcomment, new { @class = "customTxtArea form-control", @placeholder = "Your Comments..." })
+                </div>
+            </div>
+            <div class="row">
+                @Html.HiddenFor(m => m.Id)
+                @Html.HiddenFor(m => m.status)
+                @Html.HiddenFor(m => m.history)
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="saveEditButton" type="button" class="btn btn-primary">Save changes</button>
+        </div>
+    }
+</div>
+

@@ -1,0 +1,57 @@
+﻿@using NonFactors.Mvc.Grid;
+@model IEnumerable<SJIP_LIMMV1.Models.ComBoxInfoViewModel>
+@{
+    Layout = null;
+}
+
+@(Html
+    .Grid(Model)
+    .Build(columns =>
+    {
+        columns.Add(model => $"<button type=button class=editbutton data-comrec=\"{model.comrecId}\" data-url=\"{Url.Action("ComBoxEdit", "BoxInfo", new { @id = model.Id })}\">Edit</button>").Encoded(false).AppendCss("buttontd");
+        //columns.Add(model => model.lmpdnum).Titled("LMPD #");
+        columns.Add(model => model.rptpostalcode).Titled("Postal Code");
+        columns.Add(model => model.rptlift).Titled("Lift");
+        columns.Add(model => model.rptcomdate).Titled("Commission Date");
+        columns.Add(model => model.status).Titled("Status");
+        columns.Add(model => $"<button type=button class=deletebutton data-url=\"{Url.Action("ComBoxDelete", "BoxInfo", new { @id = model.Id })}\">Delete</button>").Encoded(false).AppendCss("buttontd");
+    })
+    .Empty("No data found")
+    .Id("my-ajax-grid")
+    .WithSourceUrl(Url.Action("ComBoxPartialGRID", "BoxInfo"))
+    .Pageable(pager =>
+    {
+        pager.PagesToDisplay = 5;
+        pager.RowsPerPage = 4;
+    })
+    .Filterable()
+    .Css("myButton")
+    .AppendCss("th")
+)
+@Scripts.Render("~/bundles/mvcgrid")
+@Styles.Render("~/Content/cssgrid")
+<style>
+    .myButton button {
+        font-size: smaller !important;
+        padding: 5px 10px 5px 10px !important;
+        margin: 0px !important;
+        border-radius: 10px 10px;
+    }
+
+    .myButton td {
+        font-size: small !important;
+    }
+
+    .myButton th {
+        font-size: small !important;
+    }
+
+    .buttontd {
+        font-size: small !important;
+        align-content: center !important;
+        text-align: center !important;
+    }
+</style>
+
+
+

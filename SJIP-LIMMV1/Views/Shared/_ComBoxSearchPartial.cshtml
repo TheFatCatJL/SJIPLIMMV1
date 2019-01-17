@@ -1,0 +1,117 @@
+﻿@model SJIP_LIMMV1.Models.ComBoxInfoViewModel
+
+@{
+    Layout = null;
+}
+
+<style>
+    div.row {
+        padding: 5px 0px 5px 0px;
+    }
+    h3 {
+        font-weight: bold;
+    }
+    h4 {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="form-group">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Reported Information</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h4>LMPD Commissioning Report Detail</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.lmpdnum, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.lmpdnum, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.techname, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.techname, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.teamname, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.teamname, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.rptcomdate, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.rptcomdate.ToString(), new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.rptpostalcode, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.rptpostalcode, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.rptlift, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.rptlift, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.rptcomment, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.rptcomment, new { @class = "control-label" })
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h4>Status</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.history, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.history, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.ismatched, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.ismatched.ToString(), new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.status, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.status, new { @class = "control-label" })
+        </div>
+    </div>
+</div>
+

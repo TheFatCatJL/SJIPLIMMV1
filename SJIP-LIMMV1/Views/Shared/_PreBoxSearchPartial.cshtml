@@ -1,0 +1,161 @@
+﻿@model SJIP_LIMMV1.Models.PreBoxInfoViewModel
+
+@{
+    Layout = null;
+}
+
+<style>
+    div.row {
+        padding: 5px 0px 5px 0px;
+    }
+    h3 {
+        font-weight: bold;
+    }
+    h4 {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="form-group">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Pre-Reported Information</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h4>LMPD detail</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.lmpdnum, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.lmpdnum, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.jsonid, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.jsonid, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.simnum, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.simnum, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.telco, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.telco, new { @class = "control-label" })
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h4>LMPD Checking detail</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.checkername, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.checkername, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.checkdate, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.checkdate.ToString(), new { @class = "control-label" })
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h4>LMPD Installation detail</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.techname, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.techname, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.installdate, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.installdate.ToString(), new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.postalcode, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.postalcode, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.lift, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.lift, new { @class = "control-label" })
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h4>Status</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.history, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.history, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.isdeployed, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.isdeployed.ToString(), new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.ismatched, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.ismatched.ToString(), new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.status, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.status, new { @class = "control-label" })
+        </div>
+    </div>
+</div>
+

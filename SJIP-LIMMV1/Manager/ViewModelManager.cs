@@ -1,232 +1,131 @@
 ﻿using System;
 using System.Collections.Generic;
-using SJIP_LIMMV1.Repository;
-using SJIP_LIMMV1.Models.Interfaces;
-using SJIP_LIMMV1.Models;
-using Newtonsoft.Json;
-using System.Web.Http.Results;
+using System.Dynamic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using System.Runtime.InteropServices;
+using SJIP_LIMMV1.Manager.Fluent;
+using SJIP_LIMMV1.Models;
+using SJIP_LIMMV1.Models.Interfaces;
 
 namespace SJIP_LIMMV1.Manager
 {
-    public class ViewModelManager : IDisposable
+    // This class acts as the intermediary class for client view-controller and controller-logic layer
+    // It is designed to be eventually exposed as the API interface with an additional layer of fluent interface to support fluent API style calls.
+    public class ViewModelManager <T>
+        where T : IViewModel
     {
-        private IViewModel baseModel;
-        private IEnumerable<IViewModel> baseModels;
-        private string errorMsg = "";
-        private HttpContextBase context;
-
-        // Declare logger - Note standard declaration
-        readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        // Makes ViewModel
-        private static IDictionary<string, Func<IViewModel>> MakeBaseModel = new Dictionary<string, Func<IViewModel>>
+        private HttpContextBase context { get; set; }
+        public ViewModelManager(HttpContextBase context)
         {
-            {
-                "BoxInfo", ()=> new BoxInfoViewModel()
-            }
-        };
-
-        // Makes List<ViewModel>
-        private static IDictionary<string, Func<IEnumerable<IViewModel>>> MakeBaseModels = new Dictionary<string, Func<IEnumerable<IViewModel>>>
-        {
-            {
-                "BoxInfos", ()=> new List<BoxInfoViewModel>()
-            }
-        };
-
-        // Constructor takes in the VM order and if the order requires a list
-        public ViewModelManager(string vmtype, bool isList, [Optional] HttpContextBase context)
-        {
-            if(isList)
-            {
-                var baseModelsOrder = MakeBaseModels[vmtype];
-                this.baseModels = baseModelsOrder.Invoke();                
-            }
-            else
-            {
-                var baseModelOrder = MakeBaseModel[vmtype];
-                this.baseModel = baseModelOrder.Invoke();
-            }
             this.context = context;
         }
 
-
-        #region Get Methods
-
-        // Type is inferred from constructor
-        public async Task<IViewModel> GetModel(int? id)
+        #region Get ViewModel/ViewModels
+        public async Task<T> GetNew()
         {
-            if (baseModel.GetType() == typeof(BoxInfoViewModel))                
-                return await MakeBoxInfoVM(id);
-            if (baseModel.GetType() == typeof(ContactFormViewModel))
-                return MakeContactFormVM();
-
-            // if we gone this far, something is wrong
-            errorMsg = "Error";
-            return null;
+            IViewModel basemodel;
+            if (typeof(T) == typeof(PreBoxInfoViewModel))
+                basemodel = await PreBoxFluentImplementation.PreBox(context).Get().New();
+            else if (typeof(T) == typeof(ComBoxInfoViewModel))
+                basemodel = await ComBoxFluentImplementation.ComBox(context).Get().New();
+            else if (typeof(T) == typeof(CommissionRecordVM))
+                basemodel = await ComRecFluentImplementation.ComRec(context).Get().New();
+            else if (typeof(T) == typeof(ContactFormViewModel))
+                basemodel = await ContactFormFluentImplementation.ContactForm(context).Get().New();
+            else
+                return default(T);
+            return (T)basemodel;
         }
 
-        // Type is inferred from constructor
-        public async Task<IEnumerable<IViewModel>> GetModels()
+        public async Task<IEnumerable<T>> GetAll()
         {
-            if (baseModels.GetType() == typeof(List<BoxInfoViewModel>))
-                return await MakeBoxInfoListVM();
-            if (baseModel.GetType() == typeof(ContactFormViewModel))
-                return null;
-
-            // if we gone this far, something is wrong
-            errorMsg = "Error";
-            return null;
+            IEnumerable<IViewModel> basemodels;
+            if (typeof(T) == typeof(PreBoxInfoViewModel))
+                basemodels = await PreBoxFluentImplementation.PreBox(context).Get().GetAll();
+            else if (typeof(T) == typeof(ComBoxInfoViewModel))
+                basemodels = await ComBoxFluentImplementation.ComBox(context).Get().GetAll();
+            else if (typeof(T) == typeof(CommissionRecordVM))
+                basemodels = await ComRecFluentImplementation.ComRec(context).Get().GetAll();
+            else if (typeof(T) == typeof(ContactFormViewModel))
+                basemodels = await ContactFormFluentImplementation.ContactForm(context).Get().GetAll();
+            else
+                return default(IEnumerable<T>);
+            return basemodels.Cast<T>().ToList();
         }
 
-        #endregion
-
-        #region Post Methods
-
-        internal async Task PostModel(IViewModel vm)
+        public async Task<IEnumerable<T>> GetBySpecial(int specialparam)
         {
-            if (baseModel.GetType() == typeof(BoxInfoViewModel))
-                await PostBoxInfoVM(vm);
-            if (baseModel.GetType() == typeof(ContactFormViewModel))
-                await PostContactFormVM();
-
-            // if we gone this far, something is wrong
-            errorMsg = "Error";
+            IEnumerable<IViewModel> basemodels;
+            if (typeof(T) == typeof(ComBoxInfoViewModel))
+                basemodels = await ComBoxFluentImplementation.ComBox(context).Get().ByComRec(specialparam);
+            else
+                return default(IEnumerable<T>);
+            return basemodels.Cast<T>().ToList();
         }
 
-        #endregion
-
-        #region Delete Methods
-
-        public async Task DeleteModel(int id)
+        public async Task<T> GetOneBySpecial(string specialparam)
         {
-            if (baseModel.GetType() == typeof(BoxInfoViewModel))
-                await DeleteBoxInfoVM(id);
-            if (baseModel.GetType() == typeof(ContactFormViewModel))
-                await DeleteContactFormVM();
-
-            // if we gone this far, something is wrong
-            errorMsg = "Error";
+            IViewModel basemodel;
+            if (typeof(T) == typeof(PreBoxInfoViewModel))
+                basemodel = await PreBoxFluentImplementation.PreBox(context).Get().ByString(specialparam);
+            else if (typeof(T) == typeof(CommissionRecordVM))
+                basemodel = await ComRecFluentImplementation.ComRec(context).Get().ByLMPD(specialparam);
+            else
+                return default(T);
+            return (T)basemodel;
         }
 
-        #endregion
-
-        #region BoxInfoVM Operations
-        private async Task<BoxInfoViewModel> MakeBoxInfoVM(int? orderid)
+        public async Task<T> GetByID(int id)
         {
-            try
+            IViewModel basemodel;
+            if (id > 0)
             {
-                if (orderid is null)
-                {
-                    return new BoxOperationsManager("BoxInfoInitial").getPackage();
-                }
+                if (typeof(T) == typeof(PreBoxInfoViewModel))
+                    basemodel = await PreBoxFluentImplementation.PreBox(context).Get().ByID(id);
+                else if (typeof(T) == typeof(ComBoxInfoViewModel))
+                    basemodel = await ComBoxFluentImplementation.ComBox(context).Get().ByID(id);
+                else if (typeof(T) == typeof(CommissionRecordVM))
+                    basemodel = await ComRecFluentImplementation.ComRec(context).Get().ByID(id);
+                else if (typeof(T) == typeof(ContactFormViewModel))
+                    basemodel = await ContactFormFluentImplementation.ContactForm(context).Get().ByID(id);
                 else
-                {
-                    int id = (int)orderid;
-                    var result = await GetBoxInfoRepo().GetBoxInfoViewModel(id);
-                    baseModel = result;
-                    return (BoxInfoViewModel)baseModel;
-                }
+                    return default(T);
+                return (T)basemodel;
             }
-            catch (Exception e)
-            {
-                return null;
-            }
+            return default(T);
         }
+        #endregion
 
-        private async Task<IEnumerable<BoxInfoViewModel>> MakeBoxInfoListVM()
+        #region Post ViewModel
+        public async Task Post(T vm)
         {
-            try
-            {
-                var result = await GetBoxInfoRepo().GetBoxInfoViewModels();
-                baseModels = result;
-                return (List<BoxInfoViewModel>) baseModels;
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-        }
-
-        private async Task PostBoxInfoVM(IViewModel vm)
-        {
-            BoxInfoViewModel boxInfoViewModel = (BoxInfoViewModel) vm;
-            boxInfoViewModel.lmpdnum = string.IsNullOrEmpty(boxInfoViewModel.lmpdnum) ? null : boxInfoViewModel.lmpdnum.Trim().ToUpper();
-            var findLMPD = string.IsNullOrEmpty(boxInfoViewModel.lmpdnum) ? null : await GetBoxInfoRepo().GetBoxInfoViewModel( boxInfoViewModel.lmpdnum);
-            if (findLMPD != null)
-            {
-                await GetBoxInfoRepo().PutBoxInfoViewModel(boxInfoViewModel);
-            }
-            else
-            {
-                IDictionary<string, object> orderdetails = new Dictionary<string, object>();
-                orderdetails.Add("checkername", new DashboardManager().generateUserName(context));
-                boxInfoViewModel = new BoxOperationsManager("BoxSubmmission", orderdetails, boxInfoViewModel).getPackage();
-                await GetBoxInfoRepo().PostBoxInfoViewModel(boxInfoViewModel);
-            }
-        }
-
-        private async Task DeleteBoxInfoVM(int id)
-        {
-            if (GetBoxInfoRepo().BoxInfoViewModelExists(id))
-            {
-                await GetBoxInfoRepo().DeleteBoxInfoViewModel(id);
-            }
-            else
-            {
-                logger.Info("Attempt to delete BoxInfoVM id(" + id + ") failed as there is no such ID in database");
-            }
-        }
-
-        private BoxInfoRepo GetBoxInfoRepo()
-        {
-            return new BoxInfoRepo();
+            if (typeof(T) == typeof(PreBoxInfoViewModel))
+                await PreBoxFluentImplementation.PreBox(context).Post().UsingModel((PreBoxInfoViewModel)(IViewModel)vm);
+            else if (typeof(T) == typeof(ComBoxInfoViewModel))
+                await ComBoxFluentImplementation.ComBox(context).Post().UsingModel((ComBoxInfoViewModel)(IViewModel)vm);
+            else if (typeof(T) == typeof(CommissionRecordVM))
+                await ComRecFluentImplementation.ComRec(context).Post().UsingModel((CommissionRecordVM)(IViewModel)vm);
+            else if (typeof(T) == typeof(ContactFormViewModel))
+                await ContactFormFluentImplementation.ContactForm(context).Post().UsingModel((ContactFormViewModel)(IViewModel)vm);
         }
 
         #endregion
 
-        #region ContactFormVM Operations
-        internal ContactFormViewModel MakeContactFormVM()
+        #region Delete ViewModel
+        public async Task Delete(int id)
         {
-            return null;
-        }
-
-        internal async Task PostContactFormVM()
-        {
-            
-        }
-
-        internal async Task DeleteContactFormVM()
-        {
-            
+            if (typeof(T) == typeof(PreBoxInfoViewModel))
+                await PreBoxFluentImplementation.PreBox(context).Delete().UsingID(id);
+            else if (typeof(T) == typeof(ComBoxInfoViewModel))
+                await ComBoxFluentImplementation.ComBox(context).Delete().UsingID(id);
+            else if (typeof(T) == typeof(CommissionRecordVM))
+                await ComRecFluentImplementation.ComRec(context).Delete().UsingID(id);
+            else if (typeof(T) == typeof(ContactFormViewModel))
+                await ContactFormFluentImplementation.ContactForm(context).Delete().UsingID(id);
         }
 
         #endregion
 
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-               
     }
 }

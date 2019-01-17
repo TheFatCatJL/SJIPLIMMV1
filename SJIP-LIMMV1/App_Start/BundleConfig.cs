@@ -9,7 +9,7 @@ namespace SJIP_LIMMV1
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-{version}.js"));
+                        "~/Scripts/jquery-3.3.1.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*",
@@ -31,13 +31,18 @@ namespace SJIP_LIMMV1
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
+                        //"~/Scripts/js/bootstrap.bundle*",
+                        //"~/Scripts/js/bootstrap.min.js",
                         "~/Scripts/bootstrap.js"));
-
+            
             bundles.Add(new ScriptBundle("~/bundles/mvcgrid").Include(
                         "~/Scripts/MvcGrid/mvc-grid.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                         "~/Content/bootstrap.css",
+                        //"~/Content/bootstrap-grid*",
+                        //"~/Content/bootstrap-reboot*",
+                        //"~/Content/bootstrap.min.css",
                         "~/Content/site.css"));
 
             bundles.Add(new StyleBundle("~/Content/cssprologue").Include(

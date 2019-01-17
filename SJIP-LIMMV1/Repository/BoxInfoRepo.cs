@@ -1,189 +1,443 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
+﻿using AutoMapper;
 using SJIP_LIMMV1.Models;
+using SJIP_LIMMV1.Models.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace SJIP_LIMMV1.Repository
 {
     public class BoxInfoRepo : IDisposable
     {
         readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private BoxInfoContext db = new BoxInfoContext();
+        private BoxModelEntities db = new BoxModelEntities();
 
         #region Get Operations
-        // Get using ID
-        public async Task<BoxInfoViewModel> GetBoxInfoViewModel(int id)
+        // Initialise
+        public async Task<SearchViewModel> GetEmptyBox(SearchViewModel spvm)
         {
             try
             {
-                var requestVM = await db.BoxInfoViewModels.FirstOrDefaultAsync(x => x.id == id);
-                if (requestVM == null)
+                List<BoxInfo> boxInfos = new List<BoxInfo>();
+                await Task.Run(async () =>
                 {
-                    logger.Info("BoxInfoVM of ID : " + id + " not found.");
-                    return null;
-                }
-                logger.Info("BoxInfoVM of ID : " + id + " found.");
-                return requestVM;
+                    // Prep address search strings
+                    var addresses = db.Addresses.ToList();
+                    if (addresses.Any())
+                    {
+                        foreach (var address in addresses)
+                        {
+                            if (address.PreBoxInfo.Any())
+                            {
+                                IList<BoxInfo> pboxes = Mapper.Map<IList<PreBoxInfo>, IList<BoxInfo>>(address.PreBoxInfo.ToList());
+                                foreach (var box in pboxes)
+                                {
+                                    PreBoxInfo prebox = db.PreBoxInfoes.Where(x => x.preboxId == box.preboxID).FirstOrDefault();
+                                    if (prebox != default(PreBoxInfo))
+                                    {
+                                        box.addressstring = string.Format("Block-PB : {0} , Road-PB : {1} , PostalCode-PB : {2}" +
+                                                            "Block-CB : NIL , Road-CB : NIL , PostalCode-CB : NIL"
+                                                            , box.preboxblock, box.preboxroad, box.preboxpostalcode);
+                                        box.searchstring = "";
+                                        boxInfos.Add(box);
+                                    }
+                                    BoxInfo inflatedbox = await getComBoxComRec(box);
+                                    if (inflatedbox.comboxID != 0)
+                                    {
+                                        inflatedbox.addressstring = string.Format("Block-PB : {0} , Road-PB : {1} , PostalCode-PB : {2} , " +
+                                                            "Block-CB : {3} , Road-CB : {4} , PostalCode-CB : {5}"
+                                                            , inflatedbox.preboxblock, inflatedbox.preboxroad, inflatedbox.preboxpostalcode, inflatedbox.comboxblock
+                                                            , inflatedbox.comboxroad, inflatedbox.comboxrptpostalcode);
+                                        inflatedbox.searchstring = "";
+                                        boxInfos.Add(inflatedbox);
+                                    }
+                                }
+                            }
+                            else if (address.ComBoxInfo.Any())
+                            {
+                                IList<BoxInfo> cboxes = Mapper.Map<IList<ComBoxInfo>, IList<BoxInfo>>(address.ComBoxInfo.ToList());
+                                foreach (var box in cboxes)
+                                {
+                                    BoxInfo inflatedbox = await getPreBoxComRec(box);
+                                    if (inflatedbox.comboxID != 0)
+                                    {
+                                        inflatedbox.addressstring = string.Format("Block-PB : N/A , Road-PB : N/A , PostalCode-PB : N/A , " +
+                                                            "Block-CB : {0} , Road-CB : {1} , PostalCode-CB : {2}"
+                                                            , inflatedbox.comboxblock, inflatedbox.comboxroad, inflatedbox.comboxrptpostalcode);
+                                        inflatedbox.searchstring = "";
+                                        boxInfos.Add(inflatedbox);
+                                    }
+                                }
+                            }
+                        }                        
+                    }
+
+                    // Prep simcard search strings
+                    var preboxsimcards = db.PreBoxInfoes.ToList();
+                    if (preboxsimcards.Any())
+                    {
+                        foreach (var preboxsimcard in preboxsimcards)
+                        {
+                            BoxInfo box = Mapper.Map<PreBoxInfo, BoxInfo>(preboxsimcard);
+                            box.simcardstring = string.Format("Simcard : {0} , Telco : {1}"
+                                                , box.preboxsimnum, box.preboxtelco);
+                            BoxInfo inflatedbox = await getComBoxComRec(box);
+                            inflatedbox.searchstring = "";
+                            boxInfos.Add(inflatedbox);
+                        }
+                    }
+
+                    // Prep lmpd search strings
+                    var preboxlmpds = db.PreBoxInfoes.ToList();
+                    if (preboxlmpds.Any())
+                    {
+                        foreach (var preboxlmpd in preboxlmpds)
+                        {
+                            BoxInfo box = Mapper.Map<PreBoxInfo, BoxInfo>(preboxlmpd);
+                            box.lmpdstring = string.Format("LMPD-PB : {0} , JSONID-PB : {1} , CheckerName-PB : {2} , Lift-PB : {3}" +
+                                                     "LMPD-CB : NIL , LIFT-CB : NIL"
+                                                , box.preboxlmpdnum, box.preboxjsonid, box.preboxcheckername, box.preboxlift);
+                            BoxInfo inflatedbox = await getComBoxComRec(box);
+                            if (inflatedbox.comboxID != 0)
+                            {
+                                inflatedbox.lmpdstring = string.Format("LMPD-PB : {0} , JSONID-PB : {1} , CheckerName-PB : {2} , Lift-PB : {3}" +
+                                                     "LMPD-CB : {4} , LIFT-CB : {5}"
+                                                     , inflatedbox.preboxlmpdnum, inflatedbox.preboxjsonid, inflatedbox.preboxcheckername
+                                                     , inflatedbox.preboxlift, inflatedbox.comboxlmpdnum, inflatedbox.comboxrptlift);
+                                inflatedbox.searchstring = "";
+                                boxInfos.Add(inflatedbox);
+                            }
+                            else
+                            {
+                                box.searchstring = "";
+                                boxInfos.Add(box);
+                            }                            
+                        }
+                    }
+
+                    return boxInfos;
+                }).ContinueWith((SearchResultVM) =>
+                {
+                    if (SearchResultVM.Result.Any())
+                    {
+                        spvm.records = new BoxInfoRecord(SearchResultVM.Result.ToArray<BoxInfo>());
+                        logger.Info(String.Format("Search result(s) : ({0}) obtained.", SearchResultVM.Result.Count));
+                    }
+                    logger.Info("No Search Results");
+                });
+                return spvm;
             }
             catch (Exception exception)
             {
                 logger.Error("An attempted to access the DB failed. Error Trace :" + exception);
-                return null;
+                return spvm;
             }
         }
 
-        // Get using LMPD
-        public async Task<BoxInfoViewModel> GetBoxInfoViewModel(string lmpd)
+        // Search
+        public async Task<SearchViewModel> GetBoxInfos (SearchViewModel spvm)
         {
             try
             {
-                var requestVM = await db.BoxInfoViewModels.FirstOrDefaultAsync(x => x.lmpdnum == lmpd);
-                if (requestVM == null)
+                string mySearch = string.IsNullOrWhiteSpace(spvm.searchstring) ? "" : spvm.searchstring.ToLower();
+                if(mySearch =="")
                 {
-                    logger.Info("BoxInfoVM of LMPD : " + lmpd + " not found.");
-                    return null;
+                    throw new Exception("User Send Empty String"); // can be handled in validation
                 }
-                logger.Info("BoxInfoVM of LMPD : " + lmpd + " found.");
-                return requestVM;
+                List<BoxInfo> boxInfos = new List<BoxInfo>();
+                await Task.Run(async () =>
+                {
+                    // Prep address search strings
+                    var addresses = db.Addresses.ToList();
+                    if (addresses.Any())
+                    {
+                        foreach (var address in addresses)
+                        {
+                            if (address.PreBoxInfo.Any())
+                            {
+                                IList<BoxInfo> pboxes = Mapper.Map<IList<PreBoxInfo>, IList<BoxInfo>>(address.PreBoxInfo.ToList());
+                                foreach (var box in pboxes)
+                                {
+                                    box.searchstring = spvm.searchstring;
+                                    PreBoxInfo prebox = db.PreBoxInfoes.Where(x => x.preboxId == box.preboxID).FirstOrDefault();
+                                    if (prebox != default(PreBoxInfo))
+                                    {
+                                        box.addressstring = string.Format("Block-PB : {0} , Road-PB : {1} , PostalCode-PB : {2}" +
+                                                            "Block-CB : NIL , Road-CB : NIL , PostalCode-CB : NIL"
+                                                            , box.preboxblock, box.preboxroad, box.preboxpostalcode);
+                                        box.addressstring = box.addressstring.ToLower().Contains(mySearch) ? box.addressstring : "";
+                                    }
+                                    BoxInfo inflatedbox = await getComBoxComRec(box);
+                                    if (inflatedbox.comboxID != 0)
+                                    {
+                                        inflatedbox.addressstring = string.Format("Block-PB : {0} , Road-PB : {1} , PostalCode-PB : {2} , " +
+                                                            "Block-CB : {3} , Road-CB : {4} , PostalCode-CB : {5}"
+                                                            , inflatedbox.preboxblock, inflatedbox.preboxroad, inflatedbox.preboxpostalcode, inflatedbox.comboxblock
+                                                            , inflatedbox.comboxroad, inflatedbox.comboxrptpostalcode);
+                                        inflatedbox.addressstring = inflatedbox.addressstring.ToLower().Contains(mySearch) ? inflatedbox.addressstring : "";
+                                        if(inflatedbox.addressstring != "")
+                                            boxInfos.Add(inflatedbox);
+                                    }
+                                    else
+                                    {
+                                        if (box.addressstring != "")
+                                            boxInfos.Add(box);
+                                    }
+                                }
+                            }
+                            else if (address.ComBoxInfo.Any())
+                            {
+                                IList<BoxInfo> cboxes = Mapper.Map<IList<ComBoxInfo>, IList<BoxInfo>>(address.ComBoxInfo.ToList());
+                                foreach (var box in cboxes)
+                                {
+                                    box.searchstring = spvm.searchstring;
+                                    BoxInfo inflatedbox = await getPreBoxComRec(box);
+                                    if (inflatedbox.comboxID != 0)
+                                    {
+                                        inflatedbox.addressstring = string.Format("Block-PB : N/A , Road-PB : N/A , PostalCode-PB : N/A , " +
+                                                            "Block-CB : {0} , Road-CB : {1} , PostalCode-CB : {2}"
+                                                            , inflatedbox.comboxblock, inflatedbox.comboxroad, inflatedbox.comboxrptpostalcode);
+                                        inflatedbox.addressstring = inflatedbox.addressstring.ToLower().Contains(mySearch) ? inflatedbox.addressstring : "";
+                                        if (inflatedbox.addressstring != "")
+                                            boxInfos.Add(inflatedbox);
+                                    }
+                                    else
+                                    {
+                                        if (box.addressstring != "")
+                                            boxInfos.Add(box);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Prep simcard search strings
+                    var preboxsimcards = db.PreBoxInfoes.ToList();
+                    if (preboxsimcards.Any())
+                    {
+                        foreach (var preboxsimcard in preboxsimcards)
+                        {
+                            BoxInfo box = Mapper.Map<PreBoxInfo, BoxInfo>(preboxsimcard);
+                            box.searchstring = spvm.searchstring;
+                            box.simcardstring = string.Format("Simcard : {0} , Telco : {1}"
+                                                , box.preboxsimnum, box.preboxtelco);
+                            box.simcardstring = box.simcardstring.ToLower().Contains(mySearch) ? box.simcardstring : "";
+                            if (box.simcardstring != "")
+                            {
+                                BoxInfo inflatedbox = await getComBoxComRec(box);
+                                boxInfos.Add(inflatedbox);
+                            }
+                        }
+                    }
+
+                    // Prep lmpd search strings
+                    var preboxlmpds = db.PreBoxInfoes.ToList();
+                    if (preboxlmpds.Any())
+                    {
+                        foreach (var preboxlmpd in preboxlmpds)
+                        {
+                            BoxInfo box = Mapper.Map<PreBoxInfo, BoxInfo>(preboxlmpd);
+                            box.searchstring = spvm.searchstring;
+                            box.lmpdstring = string.Format("LMPD-PB : {0} , JSONID-PB : {1} , CheckerName-PB : {2} , Lift-PB : {3}" +
+                                                     "LMPD-CB : NIL , LIFT-CB : NIL"
+                                                , box.preboxlmpdnum, box.preboxjsonid, box.preboxcheckername, box.preboxlift);
+                            box.lmpdstring = box.lmpdstring.ToLower().Contains(mySearch) ? box.lmpdstring : "";
+                            BoxInfo inflatedbox = await getComBoxComRec(box);
+                            if (inflatedbox.comboxID != 0)
+                            {
+                                inflatedbox.lmpdstring = string.Format("LMPD-PB : {0} , JSONID-PB : {1} , CheckerName-PB : {2} , Lift-PB : {3}" +
+                                                     "LMPD-CB : {4} , LIFT-CB : {5}"
+                                                     , inflatedbox.preboxlmpdnum, inflatedbox.preboxjsonid, inflatedbox.preboxcheckername
+                                                     , inflatedbox.preboxlift, inflatedbox.comboxlmpdnum, inflatedbox.comboxrptlift);
+                                inflatedbox.lmpdstring = inflatedbox.lmpdstring.ToLower().Contains(mySearch) ? inflatedbox.lmpdstring : "";
+                                if (inflatedbox.lmpdstring != "")
+                                    boxInfos.Add(inflatedbox);
+                            }
+                            else
+                            {
+                                if (box.lmpdstring != "")
+                                    boxInfos.Add(box);
+                            }
+                        }
+                    }
+
+                    return boxInfos;
+                }).ContinueWith((SearchResultVM) =>
+                {
+                    if (SearchResultVM.Result.Any())
+                    {
+                        spvm.records = new BoxInfoRecord(SearchResultVM.Result.ToArray<BoxInfo>());
+                        logger.Info(String.Format("Search result(s) : ({0}) obtained.", SearchResultVM.Result.Count));
+                    }
+                    logger.Info("No Search Results");
+                });
+                return spvm;
             }
             catch (Exception exception)
             {
                 logger.Error("An attempted to access the DB failed. Error Trace :" + exception);
-                return null;
+                return spvm;
             }
         }
 
-
-        // GETs
-        public async Task<IEnumerable<BoxInfoViewModel>> GetBoxInfoViewModels()
+        //Partial PBox
+        public async Task<PreBoxInfoViewModel> GetPBoxInfo(SearchViewModel model)
         {
             try
             {
-                var requestVMList = await db.BoxInfoViewModels.ToListAsync();
-                if (requestVMList == null)
+                string searchparam = model.searchstring;
+                PreBoxInfoViewModel pbvm = new PreBoxInfoViewModel();
+                await Task.Run(() =>
                 {
-                    logger.Info("BoxInfoVMList is empty. Either there is no data or there is unknown error");
-                    return null;
-                }
-                logger.Info("BoxInfoVMList found and returned.");
-                return requestVMList;
+                    List<BoxInfo> boxes = model.records.Cast<BoxInfo>().ToList();
+                    BoxInfo box = model.records.Cast<BoxInfo>().ToList()
+                                    .Where(x => x.addressstring == searchparam || x.lmpdstring == searchparam || x.simcardstring == searchparam)
+                                    .FirstOrDefault();
+                    PreBoxInfo pbox = box != null ? db.PreBoxInfoes.Where(x => x.preboxId == box.preboxID).FirstOrDefault() : null;
+                    pbvm = pbox != null ? Mapper.Map<PreBoxInfo, PreBoxInfoViewModel>(pbox) : null;
+                });
+                return pbvm;
             }
             catch (Exception exception)
             {
                 logger.Error("An attempted to access the DB failed. Error Trace :" + exception);
-                return null;
+                return default(PreBoxInfoViewModel);
+            }
+        }
+
+        public async Task<ComBoxInfoViewModel> GetCBoxInfo(SearchViewModel model)
+        {
+            try
+            {
+                string searchparam = model.searchstring;
+                ComBoxInfoViewModel cbvm = new ComBoxInfoViewModel();
+                await Task.Run(() =>
+                {
+                    List<BoxInfo> boxes = model.records.Cast<BoxInfo>().ToList();
+                    BoxInfo box = model.records.Cast<BoxInfo>().ToList()
+                                    .Where(x => x.addressstring == searchparam || x.lmpdstring == searchparam || x.simcardstring == searchparam)
+                                    .FirstOrDefault();
+                    ComBoxInfo cbox = box != null ? db.ComBoxInfoes.Where(x => x.comboxId == box.comboxID).FirstOrDefault() : null;
+                    cbvm = cbox != null ? Mapper.Map<ComBoxInfo, ComBoxInfoViewModel>(cbox) : null;
+                });
+                return cbvm;
+            }
+            catch (Exception exception)
+            {
+                logger.Error("An attempted to access the DB failed. Error Trace :" + exception);
+                return default(ComBoxInfoViewModel);
+            }
+        }
+
+        public async Task<CommissionRecordVM> GetComRec(SearchViewModel model)
+        {
+            try
+            {
+                string searchparam = model.searchstring;
+                CommissionRecordVM comrecvm = new CommissionRecordVM();
+                await Task.Run(() =>
+                {
+                    List<BoxInfo> boxes = model.records.Cast<BoxInfo>().ToList();
+                    BoxInfo box = model.records.Cast<BoxInfo>().ToList()
+                                    .Where(x => x.addressstring == searchparam || x.lmpdstring == searchparam || x.simcardstring == searchparam)
+                                    .FirstOrDefault();
+                    CommissionRecord comrec = box != null ? db.CommissionRecords.Where(x => x.comrecId == box.comrecID).FirstOrDefault() : null;
+                    comrecvm = comrec != null ? Mapper.Map<CommissionRecord, CommissionRecordVM>(comrec) : null;
+                });
+                return comrecvm;
+            }
+            catch (Exception exception)
+            {
+                logger.Error("An attempted to access the DB failed. Error Trace :" + exception);
+                return default(CommissionRecordVM);
             }
         }
 
         #endregion
 
-        #region Post/Put Operations
-        //Edit
-        public async Task PutBoxInfoViewModel(BoxInfoViewModel boxInfoViewModel)
-        {
-            // Retrieve entity base on the LMPD number (which is technically unique and should not double entry)
-            try
-            {
-                BoxInfoViewModel entity = await db.BoxInfoViewModels.FirstOrDefaultAsync(x => x.lmpdnum == boxInfoViewModel.lmpdnum);
-                if (entity == null)
-                {
-                    logger.Info("There is no record in database of the BoxInfoVM ID provided (" + boxInfoViewModel.id + ")");
-                }
-                db.Entry(entity).CurrentValues.SetValues(boxInfoViewModel);
-                await db.SaveChangesAsync();
-                logger.Info("Records Updated for BoxInfoVM ID (" + boxInfoViewModel.id + ")");
-            } 
-            catch (DbUpdateConcurrencyException exception)
-            {                
-                RefreshDBContextForConcurrencyClientWin();
-                if (!BoxInfoViewModelExists(boxInfoViewModel.id))
-                    logger.Error("An attempted to save BoxInfoVM(" + boxInfoViewModel.id + ") failed due to concurrency. Error Trace :" + exception);
-                else
-                    logger.Error("An attempted to save BoxInfoVM(" + boxInfoViewModel.id + ") failed as VM no longer exists. Error Trace :" + exception);
-            }
-            catch (Exception exception)
-            {
-                logger.Error("An attempted to access the DB failed. Error Trace :" + exception);
-            }
-        }
-
-        //Submit
-        public async Task PostBoxInfoViewModel(BoxInfoViewModel boxInfoViewModel)
-        {
-            try
-            {
-                db.BoxInfoViewModels.Add(boxInfoViewModel);
-                await db.SaveChangesAsync();
-                logger.Info("Posting of BoxInfoVM Successful. " + boxInfoViewModel.ToString());
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                RefreshDBContextForConcurrencyClientWin();
-                logger.Error("An attempted to save BoxInfoVM failed due to concurrency. " + boxInfoViewModel.ToString() + "Error Trace :" + e);
-            }
-            catch (Exception e)
-            {
-                logger.Error("Error when trying to create a BoxInfo entry in database. " + boxInfoViewModel.ToString() + "Error Trace : " + e);
-            }
-        }
-
-        #endregion
-        
-        #region Delete Operations
-        //Delete
-        public async Task DeleteBoxInfoViewModel(int id)
-        {
-            try
-            {
-                BoxInfoViewModel boxInfoViewModel = await db.BoxInfoViewModels.FindAsync(id);
-                if (boxInfoViewModel != null)
-                {
-                    db.BoxInfoViewModels.Remove(boxInfoViewModel);
-                    await db.SaveChangesAsync();
-                    logger.Info("Deletion of BoxInfoVM id(" + id + ") Successful.");
-                }
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                RefreshDBContextForConcurrencyStoreWin();
-                logger.Error("Attempt to delete BoxInfoVM id(" + id + ") failed due to concurrency. Error Trace :" + e);
-            }
-            catch (Exception e)
-            {
-                logger.Error("Error when trying to delete BoxInfoVM id(" + id + ") from database. Error Trace : " + e);
-            }
-        }
-
-        #endregion
-        
         #region Helpers
 
-        // Simple attempt to resolve Concurrency Issue - Client wins
-        private void RefreshDBContextForConcurrencyClientWin()
+        public async Task<BoxInfo> getComBoxComRec(BoxInfo mybox)
         {
-            var context = ((IObjectContextAdapter)db).ObjectContext;
-            var refreshableObjects = db.ChangeTracker.Entries().Select(c => c.Entity).ToList();
-            context.Refresh(System.Data.Entity.Core.Objects.RefreshMode.ClientWins, refreshableObjects);
+            await Task.Run(() =>
+            {
+                ComBoxInfo combox = db.ComBoxInfoes.Where(x => x.lmpdnum == mybox.preboxlmpdnum).FirstOrDefault();
+                if (combox != default(ComBoxInfo))
+                {
+                    BoxInfo boxinfo = Mapper.Map<ComBoxInfo, BoxInfo>(combox);
+                    mybox.comboxblock = boxinfo.comboxblock;
+                    mybox.comboxhistory = boxinfo.comboxhistory;
+                    mybox.comboxID = boxinfo.comboxID;
+                    mybox.comboxismatched = boxinfo.comboxismatched;
+                    mybox.comboxlmpdnum = boxinfo.comboxlmpdnum;
+                    mybox.comboxroad = boxinfo.comboxroad;
+                    mybox.comboxrptcomdate = boxinfo.comboxrptcomdate;
+                    mybox.comboxrptcomment = boxinfo.comboxrptcomment;
+                    mybox.comboxrptlift = boxinfo.comboxrptlift;
+                    mybox.comboxrptpostalcode = boxinfo.comboxrptpostalcode;
+                    mybox.comboxstatus = boxinfo.comboxstatus;
+                    mybox.comboxteamname = boxinfo.comboxteamname;
+                    mybox.comboxtechname = boxinfo.comboxtechname;
+                    mybox.comrecID = boxinfo.comrecID;
+                    CommissionRecord comrec = db.CommissionRecords.Where(x => x.comrecId == mybox.comrecID).FirstOrDefault();
+                    if (comrec != default(CommissionRecord))
+                    {
+                        BoxInfo boxinfo2 = Mapper.Map<CommissionRecord, BoxInfo>(comrec);
+                        mybox.comreccomment = boxinfo2.comreccomment;
+                        mybox.comrechistory = boxinfo2.comrechistory;
+                        mybox.comrecorddate = boxinfo2.comrecorddate;
+                        mybox.comrecstatus = boxinfo2.comrecstatus;
+                        mybox.comrecsupname = boxinfo2.comrecsupname;
+                    }
+                }                
+            });
+            return mybox;
         }
-
-        // Simple attempt to resolve Concurrency Issue - Store wins
-        private void RefreshDBContextForConcurrencyStoreWin()
+        
+        public async Task<BoxInfo> getPreBoxComRec(BoxInfo mybox)
         {
-            var context = ((IObjectContextAdapter)db).ObjectContext;
-            var refreshableObjects = db.ChangeTracker.Entries().Select(c => c.Entity).ToList();
-            context.Refresh(System.Data.Entity.Core.Objects.RefreshMode.StoreWins, refreshableObjects);
+            await Task.Run(() =>
+            {
+                PreBoxInfo prebox = db.PreBoxInfoes.Where(x => x.lmpdnum == mybox.comboxlmpdnum).FirstOrDefault();
+                if (prebox != default(PreBoxInfo))
+                {
+                    BoxInfo boxinfo = Mapper.Map<PreBoxInfo, BoxInfo>(prebox);
+                    mybox.preboxblock = boxinfo.preboxblock;
+                    mybox.preboxcheckdate = boxinfo.preboxcheckdate;
+                    mybox.preboxcheckername = boxinfo.preboxcheckername;
+                    mybox.preboxhistory = boxinfo.preboxhistory;
+                    mybox.preboxID = boxinfo.preboxID;
+                    mybox.preboxinstalldate = boxinfo.preboxinstalldate;
+                    mybox.preboxisdeployed = boxinfo.preboxisdeployed;
+                    mybox.preboxismatched = boxinfo.preboxismatched;
+                    mybox.preboxjsonid = boxinfo.preboxjsonid;
+                    mybox.preboxlift = boxinfo.preboxlift;
+                    mybox.preboxlmpdnum = boxinfo.preboxlmpdnum;
+                    mybox.preboxpostalcode = boxinfo.preboxpostalcode;
+                    mybox.preboxroad = boxinfo.preboxroad;
+                    mybox.preboxsimnum = boxinfo.preboxsimnum;
+                    mybox.preboxstatus = boxinfo.preboxstatus;
+                    mybox.preboxtechname = boxinfo.preboxtechname;
+                    mybox.preboxtelco = boxinfo.preboxtelco;
+                    CommissionRecord comrec = db.CommissionRecords.Where(x => x.comrecId == mybox.comrecID).FirstOrDefault();
+                    if (comrec != default(CommissionRecord))
+                    {
+                        BoxInfo boxinfo2 = Mapper.Map<CommissionRecord, BoxInfo>(comrec);
+                        mybox.comreccomment = boxinfo2.comreccomment;
+                        mybox.comrechistory = boxinfo2.comrechistory;
+                        mybox.comrecorddate = boxinfo2.comrecorddate;
+                        mybox.comrecstatus = boxinfo2.comrecstatus;
+                        mybox.comrecsupname = boxinfo2.comrecsupname;
+                    }
+                }
+            });
+            return mybox;
         }
-
-        public bool BoxInfoViewModelExists(int id)
-        {
-            return db.BoxInfoViewModels.Count(e => e.id == id) > 0;
-        }
-
         #endregion
+
 
         #region  IDisposable implementation
 
@@ -208,7 +462,6 @@ namespace SJIP_LIMMV1.Repository
                 disposed = true;
             }
         }
-
         #endregion
     }
 }

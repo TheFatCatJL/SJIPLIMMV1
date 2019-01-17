@@ -1,0 +1,371 @@
+﻿@model SJIP_LIMMV1.Models.CommissionRecordVM
+
+@{
+    ViewBag.Title = "Commissioned Boxes Submission";
+}
+
+@Scripts.Render("~/bundles/mvcgrid")
+@Styles.Render("~/Content/cssgrid")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+<style>
+    button.close {
+        background: #f5101d !important;
+        padding: 5px 10px 5px 10px;
+        border-radius: 50%;
+        float: right;
+        margin: 10px 10px 0px 0px;
+    }
+
+    .modal-body {
+        margin-left: 30px;
+    }
+
+    .deletebutton {
+        background-color: #f31010 !important;
+        color: white !important;
+        border-style: none !important;
+    }
+
+    .editbutton {
+        background-color: #8ebebc !important;
+        color: white !important;
+        border-style: none !important;
+    }
+
+    .outerdiv {
+        border-style: solid;
+        border-width: 1px;
+        border-color: #dee2e6;
+    }
+
+    .innerdiv {
+        margin: 0px 0px 10px 15px !important;
+    }
+
+    .form-horizontal .control-label {
+        text-align: initial;
+    }
+
+    div.row {
+        padding: 5px 0px 5px 0px;
+    }
+
+    h2, .h2 {
+        margin-top: 10px;
+        margin-bottom: 0px;
+    }
+
+    #saveComRecBtn {
+        margin-top: 10px;
+    }
+
+    #deleteComRecBtn {
+        margin-top: 10px;
+        margin-right: 30px !important;
+        background-color: #f31010 !important;
+        color: white !important;
+        border-style: none !important;
+    }
+
+    .customTxtArea {
+        height: 120px !important;
+        resize: none;
+    }
+
+    #addBoxButton {
+        display: inline-block;
+        border-radius: 5px 5px;
+        background-color: #62de3b;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 12px;
+        padding: 3px 8px 3px 8px;
+        margin: 5px 0px 0px 5px;
+        width: 80px;
+        transition: all 0.5s;
+        cursor: pointer;
+    }
+
+        #addBoxButton span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.5s;
+        }
+
+            #addBoxButton span:after {
+                content: '\00bb';
+                position: absolute;
+                opacity: 0;
+                top: 0;
+                right: -20px;
+                transition: 0.5s;
+            }
+
+        #addBoxButton:hover span {
+            padding-right: 15px;
+        }
+
+            #addBoxButton:hover span:after {
+                opacity: 1;
+                right: 0;
+            }
+</style>
+
+<div class="table">
+    <div class="row col-md-12">
+        <h2>Commissioned Boxes Submission</h2>
+    </div>
+    <div class="row col-md-12">
+        @using (Html.BeginForm("ComRecSubmit", "BoxInfo", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @id="myComRecForm", @class = "form -horizontal", role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="container col-md-12">
+                <div class="form-group">
+                    <span>
+                        @Html.HiddenFor(m => m.supname)
+                        @Html.HiddenFor(m => m.Id)
+                    </span>
+                    <div class="row col-md-12">
+                        <div class="col-md-9">
+                            <div class="row col-md-12 outerdiv">
+                                <div class="innerdiv col-md-12">
+                                    <div class="row col-md-12">
+                                        <div class="col-md-4">
+                                            @Html.LabelFor(m => m.Id, new { @class = "control-label" })
+                                        </div>
+                                        <div class="col-md-8">
+                                            @{
+                                                if (Model.Id == 0)
+                                                {
+                                                    @Html.Label(Model.Id.ToString(), "To be assigned", new { @class = "control-label", @value = Model.Id, @text = Model.Id, @readonly = "readonly" });
+                                                }
+                                                else
+                                                {
+                                                    @Html.Label(Model.Id.ToString(), new { @class = "control-label", @value = Model.Id, @text = Model.Id, @readonly = "readonly" });
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row col-md-12">
+                                        <div class="col-md-4">
+                                            @Html.LabelFor(m => m.supname, new { @class = "control-label" })
+                                        </div>
+                                        <div class="col-md-8">
+                                            @Html.Label(Model.supname, new { @class = "control-label", @value = Model.supname, @text = Model.supname, @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                    <div class="row col-md-12">
+                                        <div class="col-md-4">
+                                            @Html.LabelFor(m => m.status, new { @class = "control-label" })
+                                        </div>
+                                        <div class="col-md-8">
+                                            @Html.HiddenFor(m=>m.status)
+                                            @Html.Label(Model.status, new { @class = "control-label", @value = Model.status, @text = Model.status, @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                    <div class="row col-md-12">
+                                        @Html.ValidationMessageFor(m => m.comrecorddate, "", new { @class = "text-danger" })
+                                        <div class="col-md-4">
+                                            @Html.LabelFor(m => m.comrecorddate, new { @class = "control-label" })
+                                        </div>
+                                        <div class="col-md-8">
+                                            @Html.TextBoxFor(m => m.comrecorddate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "form-control datepicker", @value = Model.comrecorddate.ToString("yyyy-MM-dd") })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row col-md-12">
+                                <button type="button" id="addBoxButton"><span>Add Box</span></button>
+                            </div>
+                            <div id="myComBoxes" class="row col-md-12">
+                                @Html.Action("ComBoxPartialGRID", "BoxInfo", new { @specialparams = Model.Id })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="row outerdiv col-md-12">
+                                <div class="innerdiv col-md-12">
+                                    <div class="row col-md-12">
+                                        @Html.LabelFor(m => m.comment, new { @class = "control-label" })
+                                        @Html.TextAreaFor(m => m.comment, new { @class = "customTxtArea form-control", @placeholder = "Your Comments..." })
+                                    </div>
+                                    <div class="row col-md-12">
+                                        @Html.LabelFor(m => m.history, new { @class = "control-label" })
+                                        @Html.TextAreaFor(m => m.history, new { @class = "customTxtArea form-control", @placeholder = "Computer Generated", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row col-md-12 text-right">
+                                <input type="button" value="Delete" class="btn btn-primary" id="deleteComRecBtn" />
+                                <input type="button" value="Save" class="btn btn-primary" id="saveComRecBtn" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Modal - currently the same modal is used for edit and add-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="comboxModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <button type="button" class="btn close" data-dismiss="modal" aria-label="Close" title="Close without saving">
+                <span aria-hidden="false">&times;</span>
+            </button>
+            <div class="modal-header">
+                <h3 id="modalHeader" class="modal-title">
+                    Box Edit
+                </h3>
+            </div>
+            <div id="myModalBody" class="modal-body">
+                <!-- Child action no ASYNC-->
+                @Html.Action("ComBoxModalSetupNonAsync", "BoxInfo", new { @ID = Model.Id })
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        //initialise mvc grid
+        MVCGRID();
+    });
+
+    //Set a global for the purpose of storing comrecID
+    var returnVar = 0;
+
+    function MVCGRID() {
+        [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+            new MvcGrid(element);
+        });
+    }
+
+    //Main ComRecFormButton / Delete
+    $(document).on('click', '#deleteComRecBtn', (function (e) {
+        var url = '@Url.Action("ComRecDelete", "BoxInfo", new { @id=Model.Id })'
+        $.post(url, function (data) {
+            window.location.href = '@Url.Action("ComRecHistory", "BoxInfo")';
+        });
+    }));
+
+        //Main ComRecFormButton / Save
+    $(document).on('click', '#saveComRecBtn', (function (e) {
+        var formdata = $('#myComRecForm').serializeArray();
+        $.each(formdata, function (i, v) {
+            if (v.name == "Id") {                
+                v.value = returnVar;
+            }
+        });
+        var url = '@Url.Action("ComRecSubmit", "BoxInfo")';
+        $.post(url, formdata, function (data) {
+            $("body").html(data);
+        })
+    }));
+
+    // Grid Buttons
+    $(document).on('click', '.editbutton', (function (e) {
+        //prep ajax get for modal
+        var $modalDiv = $(document).find('#myModalBody');
+        var url = $(this).data('url');
+        $.get(url, function (data) {
+            $modalDiv.html(data);
+        }).done(() => {
+            $('#addMoreButton').hide();
+            $('#saveEditButton').text('Save Changes');
+            $('#modalHeader').text('Edit Commissioned LMPD');
+        });
+        $('#myModal').modal({ show: true });
+    }));
+
+    $(document).on('click', '.deletebutton', (function (e) {
+        //prep ajax get for modal
+        var $gridDiv = $('#myComBoxes');
+        var url = $(this).data('url');
+        $.get(url, function (data) {
+            $gridDiv.html(data);
+            setTimeout(
+                function () {
+                    MVCGRID();
+                }, 1000);
+        });
+    }));
+
+    // New Modal - Add Box Button
+    $(document).on('click', '#addBoxButton', (function (e) {
+        //prep ajax get
+        var $modalDiv = $(document).find('#myModalBody');
+        var url = '@Url.Action("ComBoxAddPartial", "BoxInfo", new { @ID = Model.Id })';
+        $.get(url, function (data) {
+            $modalDiv.html(data);
+        }).done(() => {
+            $('#saveEditButton').text('Add & Close');
+            $('#addMoreButton').show();
+            $('#modalHeader').text('Add Commissioned LMPD');
+        });
+        $('#myModal').modal({ show: true });
+    }));
+    
+    // New Modal - Add and Close Button (SaveEditButton)
+    // Basically same code but closing modal
+    $(document).on('click', '#saveEditButton', (function (e) {
+
+        var formdata = $('#myBoxForm').serializeArray();
+        $.each(formdata, function (i, v) {
+            if (v.name == "comrecId") {                
+                v.value = returnVar;
+            }
+        });
+
+        //prep ajax post
+        var $comboxDiv = $('#myComBoxes');
+        var url = '@Url.Action("ComBoxSubmitAjax", "BoxInfo")';
+        $.post(url, formdata, function (data) {
+            $comboxDiv.html(data);
+        })
+
+        var $modalDiv = $(document).find('#myModalBody');
+        var url = '@Url.Action("ComBoxAddPartial", "BoxInfo")';
+        $.get(url, function (data) {
+            $modalDiv.html(data);
+        }).done(() => {
+            $('#myModal').modal('hide');
+            setTimeout(function () {
+                var editbuttons = $(".editbutton");
+                var myid = $(editbuttons).first().data("comrec");
+                returnVar = myid;
+            },1000);
+        });               
+    }));
+
+    // New Modal - AddMore Button
+    $(document).on('click','#addMoreButton', (function (e) {
+        //serialise form for JSON transfer
+        var formdata = $('#myBoxForm').serializeArray();
+
+        //prep ajax post
+        var $comboxDiv = $('#myComBoxes');
+        var url = '@Url.Action("ComBoxSubmitAjax", "BoxInfo")';
+        $.post(url, formdata, function (data) {
+            $comboxDiv.html(data);
+        });
+
+        var $modalDiv = $(document).find('#myModalBody');
+        var url = '@Url.Action("ComBoxAddPartial", "BoxInfo")';
+        $.get(url, function (data) {
+            $modalDiv.html(data);
+        }).done(() => {
+            //$('#saveEditButton').text('Add & Close');
+            //$('#addMoreButton').show();
+            //$('#modalHeader').text('Add New Box');            
+        });
+        //$('#myModal').modal({ show: true });
+        //$('#myModal').modal('hide');
+        //var boxhistorytitle = 'Box Preparation History (Last changed for ID:' + id +')';
+        //$('#dashboardBoxHistoryTitle').text(boxhistorytitle);
+        
+    }));
+
+</script>

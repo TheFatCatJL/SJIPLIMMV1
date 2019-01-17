@@ -6,9 +6,6 @@
     <title>@ViewBag.Title - LIMMS V1.0</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/mvcgrid")
-    @Styles.Render("~/Content/cssgrid")
-
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -24,8 +21,11 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @Title = "Home" })</li>
-                    <li>@Html.ActionLink("Box", "BoxInfoModule", "BoxInfo", new { @Title = "Submit Box" })</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { @Title = "Contact" })</li>
+                    <li>@Html.ActionLink("Add Box", "PreBoxAdd", "BoxInfo", new { area = "" }, new { @Title = "Submit Box" })</li>
+                    <li>@Html.ActionLink("Search", "MainSearch", "Search", new { area = "" }, new { @Title = "Search Box Details" })</li>
+                    <li>@Html.ActionLink("Commissioned Box Submission", "ComRecForm", "BoxInfo", new { area = "" }, new { @Title = "Commissioning Record" })</li>
+                    <li>@Html.ActionLink("Submission History", "ComRecHistory", "BoxInfo", new { area = "" }, new { @Title = "Commissioning Record History" })</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @Title = "Contact" })</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -43,12 +43,12 @@
         @RenderSection("scripts", required: false)
     </div>
 
-    <script>
-        [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
-            new MvcGrid(element);
-        });
-    </script>
+
     <style>
+
+        .navbar {
+            min-height: 0px;
+        }
 
         #beforefooter {
             padding-bottom: 20px !important;

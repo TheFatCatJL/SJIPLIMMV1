@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using SJIP_LIMMV1.Manager;
@@ -13,14 +14,14 @@ namespace SJIP_LIMMV1.Controllers
     public class RolesController : Controller
     {
         // GET: Roles
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             ApplicationDbContext dbContext = new ApplicationDbContext();
             DashboardManager helper = new DashboardManager();
             if(User.Identity.IsAuthenticated)
             {
                 var user = User.Identity;
-                if(!helper.isAdminUser(user))
+                if(await helper.isAdminUser(user))
                 {
                     return RedirectToAction("Index", "Home");
                 }

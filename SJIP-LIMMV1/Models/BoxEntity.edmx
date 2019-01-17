@@ -1,0 +1,366 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="BoxModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="BoxModelStoreContainer">
+    <EntitySet Name="Addresses" EntityType="BoxModel.Store.Addresses" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="ComBoxInfoes" EntityType="BoxModel.Store.ComBoxInfoes" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="CommissionRecords" EntityType="BoxModel.Store.CommissionRecords" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="PreBoxInfoes" EntityType="BoxModel.Store.PreBoxInfoes" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="ContactForms" EntityType="BoxModel.Store.ContactForms" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="CommissionRecordComBoxInfo" Association="BoxModel.Store.CommissionRecordComBoxInfo">
+      <End Role="CommissionRecord" EntitySet="CommissionRecords" />
+      <End Role="ComBoxInfo" EntitySet="ComBoxInfoes" />
+    </AssociationSet>
+    <AssociationSet Name="AddressComBoxInfo" Association="BoxModel.Store.AddressComBoxInfo">
+      <End Role="Address" EntitySet="Addresses" />
+      <End Role="ComBoxInfo" EntitySet="ComBoxInfoes" />
+    </AssociationSet>
+    <AssociationSet Name="AddressPreBoxInfo" Association="BoxModel.Store.AddressPreBoxInfo">
+      <End Role="Address" EntitySet="Addresses" />
+      <End Role="PreBoxInfo" EntitySet="PreBoxInfoes" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Addresses">
+    <Key>
+      <PropertyRef Name="postalcode" />
+    </Key>
+    <Property Name="postalcode" Type="int" Nullable="false" />
+    <Property Name="blk" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="road" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="legacycode1" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="legacycode2" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="legacycode3" Type="nvarchar(max)" Nullable="true" />
+  </EntityType>
+  <EntityType Name="ComBoxInfoes">
+    <Key>
+      <PropertyRef Name="comboxId" />
+    </Key>
+    <Property Name="comboxId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="rptlift" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="rptcomment" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="teamname" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="techname" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="status" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="history" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="postalcode" Type="int" Nullable="true" />
+    <Property Name="comrecId" Type="int" Nullable="true" />
+    <Property Name="lmpdnum" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="rptdate" Type="datetime" Nullable="false" />
+    <Property Name="ismatched" Type="bit" Nullable="false" />
+  </EntityType>
+  <EntityType Name="CommissionRecords">
+    <Key>
+      <PropertyRef Name="comrecId" />
+    </Key>
+    <Property Name="comrecId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="supname" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="comrecorddate" Type="datetime" Nullable="false" />
+    <Property Name="history" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="status" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="comment" Type="nvarchar(max)" Nullable="true" />
+  </EntityType>
+  <EntityType Name="PreBoxInfoes">
+    <Key>
+      <PropertyRef Name="preboxId" />
+    </Key>
+    <Property Name="preboxId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="lmpdnum" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="jsonid" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="checkername" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="checkdate" Type="datetime" Nullable="true" />
+    <Property Name="status" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="history" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="isdeployed" Type="bit" Nullable="true" />
+    <Property Name="installdate" Type="datetime" Nullable="true" />
+    <Property Name="lift" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="simnum" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="telco" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="postalcode" Type="int" Nullable="true" />
+    <Property Name="ismatched" Type="bit" Nullable="false" />
+  </EntityType>
+  <EntityType Name="ContactForms">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Email" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Message" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <Association Name="CommissionRecordComBoxInfo">
+    <End Role="CommissionRecord" Type="BoxModel.Store.CommissionRecords" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="ComBoxInfo" Type="BoxModel.Store.ComBoxInfoes" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="CommissionRecord">
+        <PropertyRef Name="comrecId" />
+      </Principal>
+      <Dependent Role="ComBoxInfo">
+        <PropertyRef Name="comrecId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="AddressComBoxInfo">
+    <End Role="Address" Type="BoxModel.Store.Addresses" Multiplicity="0..1" />
+    <End Role="ComBoxInfo" Type="BoxModel.Store.ComBoxInfoes" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Address">
+        <PropertyRef Name="postalcode" />
+      </Principal>
+      <Dependent Role="ComBoxInfo">
+        <PropertyRef Name="postalcode" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="AddressPreBoxInfo">
+    <End Role="Address" Type="BoxModel.Store.Addresses" Multiplicity="0..1" />
+    <End Role="PreBoxInfo" Type="BoxModel.Store.PreBoxInfoes" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Address">
+        <PropertyRef Name="postalcode" />
+      </Principal>
+      <Dependent Role="PreBoxInfo">
+        <PropertyRef Name="postalcode" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="BoxModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Address">
+          <Key>
+            <PropertyRef Name="postalcode" />
+          </Key>
+          <Property Name="postalcode" Type="Int32" Nullable="false" />
+          <Property Name="blk" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="road" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Name="legacycode1" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="legacycode2" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="legacycode3" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="ComBoxInfo" Relationship="BoxModel.AddressComBoxInfo" FromRole="Address" ToRole="ComBoxInfo" />
+          <NavigationProperty Name="PreBoxInfo" Relationship="BoxModel.AddressPreBoxInfo" FromRole="Address" ToRole="PreBoxInfo" />
+        </EntityType>
+        <EntityType Name="ComBoxInfo">
+          <Key>
+            <PropertyRef Name="comboxId" />
+          </Key>
+          <Property Name="comboxId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="rptlift" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="rptcomment" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="teamname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="techname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="history" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="CommissionRecord" Relationship="BoxModel.CommissionRecordComBoxInfo" FromRole="ComBoxInfo" ToRole="CommissionRecord" />
+          <Property Name="postalcode" Type="Int32" Nullable="true" />
+          <NavigationProperty Name="Address" Relationship="BoxModel.AddressComBoxInfo" FromRole="ComBoxInfo" ToRole="Address" />
+          <Property Name="comrecId" Type="Int32" Nullable="true" />
+          <Property Name="lmpdnum" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="rptdate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ismatched" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CommissionRecord">
+          <Key>
+            <PropertyRef Name="comrecId" />
+          </Key>
+          <Property Name="comrecId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="supname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="comrecorddate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="history" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="ComBoxInfoes" Relationship="BoxModel.CommissionRecordComBoxInfo" FromRole="CommissionRecord" ToRole="ComBoxInfo" />
+          <Property Name="comment" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="PreBoxInfo">
+          <Key>
+            <PropertyRef Name="preboxId" />
+          </Key>
+          <Property Name="preboxId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="lmpdnum" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="jsonid" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="checkername" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="checkdate" Type="DateTime" Nullable="true" Precision="3" />
+          <Property Name="status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="history" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="isdeployed" Type="Boolean" />
+          <Property Name="installdate" Type="DateTime" Nullable="true" Precision="3" />
+          <Property Name="lift" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="simnum" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="telco" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="postalcode" Type="Int32" Nullable="true" />
+          <NavigationProperty Name="Address" Relationship="BoxModel.AddressPreBoxInfo" FromRole="PreBoxInfo" ToRole="Address" />
+          <Property Name="ismatched" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityContainer Name="BoxModelEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Addresses" EntityType="Self.Address" />
+          <EntitySet Name="ComBoxInfoes" EntityType="Self.ComBoxInfo" />
+          <EntitySet Name="CommissionRecords" EntityType="Self.CommissionRecord" />
+          <EntitySet Name="PreBoxInfoes" EntityType="Self.PreBoxInfo" />
+          <AssociationSet Name="CommissionRecordComBoxInfo" Association="BoxModel.CommissionRecordComBoxInfo">
+            <End Role="CommissionRecord" EntitySet="CommissionRecords" />
+            <End Role="ComBoxInfo" EntitySet="ComBoxInfoes" />
+          </AssociationSet>
+          <AssociationSet Name="AddressComBoxInfo" Association="BoxModel.AddressComBoxInfo">
+            <End Role="Address" EntitySet="Addresses" />
+            <End Role="ComBoxInfo" EntitySet="ComBoxInfoes" />
+          </AssociationSet>
+          <AssociationSet Name="AddressPreBoxInfo" Association="BoxModel.AddressPreBoxInfo">
+            <End Role="Address" EntitySet="Addresses" />
+            <End Role="PreBoxInfo" EntitySet="PreBoxInfoes" />
+          </AssociationSet>
+          <EntitySet Name="ContactForms" EntityType="BoxModel.ContactForm" />
+        </EntityContainer>
+        <Association Name="CommissionRecordComBoxInfo">
+          <End Type="BoxModel.CommissionRecord" Role="CommissionRecord" Multiplicity="0..1" >
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="BoxModel.ComBoxInfo" Role="ComBoxInfo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CommissionRecord">
+              <PropertyRef Name="comrecId" />
+            </Principal>
+            <Dependent Role="ComBoxInfo">
+              <PropertyRef Name="comrecId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="AddressComBoxInfo">
+          <End Type="BoxModel.Address" Role="Address" Multiplicity="0..1" />
+          <End Type="BoxModel.ComBoxInfo" Role="ComBoxInfo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Address">
+              <PropertyRef Name="postalcode" />
+            </Principal>
+            <Dependent Role="ComBoxInfo">
+              <PropertyRef Name="postalcode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="AddressPreBoxInfo">
+          <End Type="BoxModel.Address" Role="Address" Multiplicity="0..1" />
+          <End Type="BoxModel.PreBoxInfo" Role="PreBoxInfo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Address">
+              <PropertyRef Name="postalcode" />
+            </Principal>
+            <Dependent Role="PreBoxInfo">
+              <PropertyRef Name="postalcode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ContactForm">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Email" Type="String" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" />
+          <Property Name="Message" Type="String" Nullable="false" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="BoxModelStoreContainer" CdmEntityContainer="BoxModelEntities">
+    <EntitySetMapping Name="Addresses">
+      <EntityTypeMapping TypeName="IsTypeOf(BoxModel.Address)">
+        <MappingFragment StoreEntitySet="Addresses">
+          <ScalarProperty Name="postalcode" ColumnName="postalcode" />
+          <ScalarProperty Name="blk" ColumnName="blk" />
+          <ScalarProperty Name="road" ColumnName="road" />
+          <ScalarProperty Name="legacycode1" ColumnName="legacycode1" />
+          <ScalarProperty Name="legacycode2" ColumnName="legacycode2" />
+          <ScalarProperty Name="legacycode3" ColumnName="legacycode3" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ComBoxInfoes">
+      <EntityTypeMapping TypeName="IsTypeOf(BoxModel.ComBoxInfo)">
+        <MappingFragment StoreEntitySet="ComBoxInfoes">
+          <ScalarProperty Name="comboxId" ColumnName="comboxId" />
+          <ScalarProperty Name="rptlift" ColumnName="rptlift" />
+          <ScalarProperty Name="rptcomment" ColumnName="rptcomment" />
+          <ScalarProperty Name="teamname" ColumnName="teamname" />
+          <ScalarProperty Name="techname" ColumnName="techname" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="history" ColumnName="history" />
+          <ScalarProperty Name="postalcode" ColumnName="postalcode" />
+          <ScalarProperty Name="comrecId" ColumnName="comrecId" />
+          <ScalarProperty Name="lmpdnum" ColumnName="lmpdnum" />
+          <ScalarProperty Name="rptdate" ColumnName="rptdate" />
+          <ScalarProperty Name="ismatched" ColumnName="ismatched" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CommissionRecords">
+      <EntityTypeMapping TypeName="IsTypeOf(BoxModel.CommissionRecord)">
+        <MappingFragment StoreEntitySet="CommissionRecords">
+          <ScalarProperty Name="comrecId" ColumnName="comrecId" />
+          <ScalarProperty Name="supname" ColumnName="supname" />
+          <ScalarProperty Name="comrecorddate" ColumnName="comrecorddate" />
+          <ScalarProperty Name="history" ColumnName="history" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="comment" ColumnName="comment" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PreBoxInfoes">
+      <EntityTypeMapping TypeName="IsTypeOf(BoxModel.PreBoxInfo)">
+        <MappingFragment StoreEntitySet="PreBoxInfoes">
+          <ScalarProperty Name="preboxId" ColumnName="preboxId" />
+          <ScalarProperty Name="lmpdnum" ColumnName="lmpdnum" />
+          <ScalarProperty Name="jsonid" ColumnName="jsonid" />
+          <ScalarProperty Name="checkername" ColumnName="checkername" />
+          <ScalarProperty Name="checkdate" ColumnName="checkdate" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="history" ColumnName="history" />
+          <ScalarProperty Name="isdeployed" ColumnName="isdeployed" />
+          <ScalarProperty Name="installdate" ColumnName="installdate" />
+          <ScalarProperty Name="lift" ColumnName="lift" />
+          <ScalarProperty Name="simnum" ColumnName="simnum" />
+          <ScalarProperty Name="telco" ColumnName="telco" />
+          <ScalarProperty Name="postalcode" ColumnName="postalcode" />
+          <ScalarProperty Name="ismatched" ColumnName="ismatched" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ContactForms">
+      <EntityTypeMapping TypeName="IsTypeOf(BoxModel.ContactForm)">
+        <MappingFragment StoreEntitySet="ContactForms">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Message" ColumnName="Message" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

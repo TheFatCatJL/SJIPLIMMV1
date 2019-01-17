@@ -1,0 +1,376 @@
+﻿@model  SJIP_LIMMV1.Models.SearchViewModel
+@{
+    ViewBag.Title = "createView";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .validationError {
+        color: red;
+    }
+    .outerdiv {
+        border-style: solid;
+        border-width: 1px;
+        border-color: #dee2e6;
+    }
+    .innerdiv {
+        margin: 30px 5px 30px 5px !important;
+    }
+    .innerdivcontent {
+        margin: 10px 5px 10px 5px !important;
+    }
+    .minispace {
+        margin-left:5px !important;
+    }
+    .searchTextBox {
+        max-width: 1025px !important;
+        width: 1025px !important;
+    }
+    #buttonsearch {
+        background-color: #8ebebc !important;
+        color: white !important;
+        border-style: none !important;
+    }
+</style>
+
+<div class="row col-md-12 col-xs-12">
+    <h2>Search Info</h2>
+</div>
+<div class="container col-md-12 col-xs-12 outerdiv">
+    <div class="row col-md-12 col-xs-12 innerdiv">
+        @using (Html.BeginForm("MainSearch", "Search", null, FormMethod.Post, new { @id = "mySearchForm", role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="col-md-3 col-xs-3">
+                @Html.LabelFor(x => x.Placeholder, new { @class = "control-label" })
+                @Html.RadioButtonFor(x => x.radiochoice, "1", new { @class = "minispace" })
+            </div>
+            <div class="col-md-3 col-xs-3">
+                @Html.LabelFor(x => x.Block, new { @class = "control-label" })
+                @Html.RadioButtonFor(x => x.radiochoice, "2", new { @class = "minispace" })
+            </div>
+            <div class="col-md-3 col-xs-3">
+                @Html.LabelFor(x => x.LMPD, new { @class = "control-label" })
+                @Html.RadioButtonFor(x => x.radiochoice, "3", new { @class = "minispace" })
+            </div>
+            <div class="col-md-3 col-xs-3">
+                @Html.LabelFor(x => x.SIMCard, new { @class = "control-label" })
+                @Html.RadioButtonFor(x => x.radiochoice, "4", new { @class = "minispace" })
+            </div>
+            <div class="col-md-12 col-xs-12" id="searchDiv">
+                @Html.TextBoxFor(x => x.searchstring, new { @id = "searchbar", @class = "form-control searchTextBox", @value = Model.searchstring })
+            </div>
+            <div class="col-md-12 col-xs-12" style="padding-top:10px;">
+                <input type="button" id="buttonsearch" class="btn" value="Search" />
+            </div>
+        }
+    </div>
+</div>
+<div class="container col-md-12 col-xs-12 hiddendiv">
+    <div id="gridcontent" class="row col-md-12 col-xs-12 innerdivcontent">
+    </div>
+</div>
+<div class="container col-md-6 col-xs-6 hiddendiv">
+    <div id="pboxcontent" class="row col-md-12 col-xs-12 innerdivcontent">
+    </div>
+</div>
+<div class="container col-md-6 col-xs-6 hiddendiv">
+    <div id="cboxcontent" class="row col-md-12 col-xs-12 innerdivcontent">
+    </div>
+    <div id="comreccontent" class="row col-md-12 col-xs-12 innerdivcontent">
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+<script>
+
+    $(document).ready(function () {
+        //var mysearchbar = document.getElementById("searchbar");
+        MVCGRID();
+    });
+
+    function MVCGRID() {
+        [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+            new MvcGrid(element);
+        });
+    }
+
+    function CloseAllDiv() {
+        $('#gridcontent').hide();
+        $('#pboxcontent').hide();
+        $('#cboxcontent').hide();
+        $('#comreccontent').hide();
+    }
+
+    function CloseOnlyContent() {
+        $('#pboxcontent').hide();
+        $('#cboxcontent').hide();
+        $('#comreccontent').hide();
+    }
+
+    $(document).on('click', '#buttonsearch', (function (e) {
+        CloseAllDiv();
+        //serialise form for JSON transfer
+        var formdata = $('#mySearchForm').serializeArray();
+        //prep ajax post
+        var $gridDiv = $('#gridcontent');
+        var url = '@Url.Action("MainSearch", "Search")';
+        $.post(url, formdata, function (data) {
+            $gridDiv.html(data);
+            $gridDiv.show();
+            setTimeout(
+                function () {
+                    MVCGRID();
+                }, 1000);
+        });
+    }));
+
+    @using Newtonsoft.Json
+    @using SJIP_LIMMV1.Models
+    //textbar changes according to radio option
+    
+    $('input[type=radio]').change(function () {
+        var $mySearchDiv = $('#searchDiv');
+        if (this.value == '1') {
+
+        }
+        else if (this.value == '2') {
+            var mysearchbar = document.getElementById("searchbar");
+            @{
+                List<BoxInfo> myboxinfoes = Model.records.Cast<BoxInfo>().ToList();
+                List<string> mystringlist = new List<string>();
+                if (myboxinfoes.Any())
+                {
+                    mystringlist = myboxinfoes
+                                    .Where(x => x.addressstring != "")
+                                    .Where(x => x.addressstring != null)
+                                    .Select(x => x.addressstring)
+                                    .ToList();
+                }
+              }
+                autocomplete(mysearchbar, @Html.Raw(JsonConvert.SerializeObject(mystringlist)))
+        }
+        else if (this.value == '3') {
+            var mysearchbar = document.getElementById("searchbar");
+            @{
+                if (myboxinfoes.Any())
+                {
+                    mystringlist = myboxinfoes
+                                    .Where(x => x.lmpdstring != "")
+                                    .Where(x => x.lmpdstring != null)
+                                    .Select(x => x.lmpdstring)
+                                    .ToList();
+                }
+              }
+                autocomplete(mysearchbar, @Html.Raw(JsonConvert.SerializeObject(mystringlist)))
+        }
+        else if (this.value == '4') {
+            var mysearchbar = document.getElementById("searchbar");
+            @{
+                if (myboxinfoes.Any())
+                {
+                    mystringlist = myboxinfoes
+                                    .Where(x => x.simcardstring != "")
+                                    .Where(x => x.simcardstring != null)
+                                    .Select(x => x.simcardstring)
+                                    .ToList();
+                }
+             }
+            autocomplete(mysearchbar, @Html.Raw(JsonConvert.SerializeObject(mystringlist)))
+        }
+    });
+
+
+    $(document).on('click', '.selectionbutton', (function (e) {
+        CloseOnlyContent();
+        //serialise form for JSON transfer        
+        var uid = $(this).data("uid");
+        var searchstring = $(this).data("searchstr");
+        var addressstring = $(this).data("addressstr");
+        var simcardstring = $(this).data("simcardstr");
+        var lmpdstring = $(this).data("lmpdstr");
+
+        if (addressstring != null && addressstring != "") {
+            searchstring = addressstring;
+        } else if (simcardstring != null && simcardstring != "") {
+            searchstring = simcardstring;
+        } else {
+            searchstring = lmpdstring;
+        }            
+
+        var dataobject = {
+        "searchstring": searchstring
+        }
+        var formdata = $.param(dataobject);
+        //prep ajax post
+        var url = '@Url.Action("GetSearchStringAjax", "Search")';
+        $.post(url, formdata, function (data) {
+            //push data to populate the content divs
+            var $pboxDiv = $('#pboxcontent');
+            var purl = '@Url.Action("PboxSearchAjax", "Search")';
+            $.post(purl, data, function (pbdata) {
+                $pboxDiv.html(pbdata);
+                $pboxDiv.show();
+            });
+
+            var $cboxDiv = $('#cboxcontent');
+            var curl = '@Url.Action("CboxSearchAjax", "Search")';
+            $.post(curl, data, function (cbdata) {
+                $cboxDiv.html(cbdata);
+                $cboxDiv.show();
+            });
+
+            var $crDiv = $('#comreccontent');
+            var crurl = '@Url.Action("ComRecSearchAjax", "Search")';
+            $.post(crurl, data, function (crdata) {
+                $crDiv.html(crdata);
+                $crDiv.show();
+            });
+        });
+    }));
+
+    //data prep for autocomplete on each changes, activated by onfocus
+    $("#searchbar").focus(function () {
+
+    });
+
+    //initialise mvc grid
+
+
+    function autocomplete(inp, arr) {
+        /*the autocomplete function takes two arguments,
+        the text field element and an array of possible autocompleted values, this array must have sensorbox filter fields seperated by ","*/
+        var currentFocus;
+        /*execute a function when someone writes in the text field:*/
+        inp.addEventListener("input", function (e) {
+            var a, b, i, val = this.value;
+            /*close any already open lists of autocompleted values*/
+            closeAllLists();
+            if (!val) { return false; }
+            currentFocus = -1;
+            /*create a DIV element that will contain the items (values):*/
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+            //create a scroll bar for all items
+            a.setAttribute("style", "    position: absolute: height: 300px; overflow-y: scroll;");
+            /*append the DIV element as a child of the autocomplete container:*/
+            this.parentNode.appendChild(a);
+            var maxResult = 5;//parseInt($("#MaxSearchResult").children("option:selected").val());
+            //create a counter to count the number of matching results
+            var matchingNo = 1;
+            /*for each item in the array...*/
+            for (i = 0; i < arr.length; i++)
+            {
+                /*check if the item has the same letters as the text field value: and limit to matching return to first 5 items*/
+                if ((arr[i].toLowerCase().search(val.toLowerCase()) != -1) && (matchingNo <= maxResult))
+                {
+                    //increase the matched result counter if matching found
+                    matchingNo++;
+                    /*create a DIV element for each matching element:*/
+                    b = document.createElement("DIV");
+                    b.setAttribute("id", "sdiv"+i);
+                    //split option into sub array
+                    var subArr = arr[i];
+
+                    // Bold the searched param if matched
+                    var valStartPosition = subArr.toLowerCase().search(val.toLowerCase());
+                    var subOptionString = "";
+                    if (valStartPosition != -1) {
+                        subOptionString = subArr.substr(0, valStartPosition);
+                        subOptionString += "<strong>" + subArr.substr(valStartPosition, val.length) + "</strong>";
+                        subOptionString += subArr.substr(valStartPosition + val.length);
+                        b.innerHTML += subOptionString;
+                    }
+
+                    /*execute a function when someone clicks on the item value (DIV element):*/
+                    $(b).on("click", function (event) {
+                        CloseAllDiv();
+                        inp.value = this.innerText;
+                        var formdata = $('#myForm').serializeArray();
+
+                        var $pboxDiv = $('#pboxcontent');
+                        var purl = '@Url.Action("PboxSearchAjax", "Search")';
+                        $.post(purl, formdata, function (data) {
+                            $pboxDiv.html(data);
+                            $pboxDiv.show();
+                        });
+
+                        var $cboxDiv = $('#cboxcontent');
+                        var curl = '@Url.Action("CboxSearchAjax", "Search")';
+                        $.post(curl, formdata, function (data) {
+                            $cboxDiv.html(data);
+                            $cboxDiv.show();
+                        });
+
+                        var $crDiv = $('#comreccontent');
+                        var crurl = '@Url.Action("ComRecSearchAjax", "Search")';
+                        $.post(crurl, formdata, function (data) {
+                            $crDiv.html(data);
+                            $crDiv.show();
+                        });
+
+                        closeAllLists();
+                    });
+                    a.appendChild(b);
+                }
+            }
+        });
+        /*execute a function presses a key on the keyboard:*/
+        inp.addEventListener("keydown", function (e) {
+            var x = document.getElementById(this.id + "autocomplete-list");
+            if (x) x = x.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+                /*If the arrow DOWN key is pressed,
+                increase the currentFocus variable:*/
+                currentFocus++;
+                /*and and make the current item more visible:*/
+                addActive(x);
+            } else if (e.keyCode == 38) { //up
+                                            /*If the arrow UP key is pressed,
+                                            decrease the currentFocus variable:*/
+                currentFocus--;
+                /*and and make the current item more visible:*/
+                addActive(x);
+            } else if (e.keyCode == 13) {
+                /*If the ENTER key is pressed, prevent the form from being submitted,*/
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    /*and simulate a click on the "active" item:*/
+                    if (x) x[currentFocus].click();
+                }
+            }
+        });
+        function addActive(x) {
+                    /*a function to classify an item as "active":*/
+                    if (!x) return false;
+                    /*start by removing the "active" class on all items:*/
+                    removeActive(x);
+                    if (currentFocus >= x.length) currentFocus = 0;
+                    if (currentFocus < 0) currentFocus = (x.length - 1);
+                    /*add class "autocomplete-active":*/
+                    x[currentFocus].classList.add("autocomplete-active");
+        }
+        function removeActive(x) {
+            /*a function to remove the "active" class from all autocomplete items:*/
+            for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+            }
+        }
+        function closeAllLists(elmnt) {
+            /*close all autocomplete lists in the document,
+            except the one passed as an argument:*/
+            var x = document.getElementsByClassName("autocomplete-items");
+            for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                    x[i].parentNode.removeChild(x[i]);
+                }
+            }
+        }
+        /*execute a function when someone clicks in the document:*/
+        document.addEventListener("click", function (e) {
+            closeAllLists(e.target);
+        });
+    }
+</script>

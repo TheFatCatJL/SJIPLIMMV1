@@ -265,7 +265,6 @@ C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Threading.Tasks.P
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Threading.Thread.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Threading.ThreadPool.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Threading.Timer.dll
-C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.ValueTuple.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Xml.ReaderWriter.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Xml.XDocument.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Xml.XmlDocument.dll
@@ -274,9 +273,11 @@ C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Xml.XPath.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Xml.XPath.XDocument.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Antlr3.Runtime.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\AspNetCore.Email.dll
+C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\AutoMapper.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\BouncyCastle.Crypto.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\EntityFramework.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\EntityFramework.SqlServer.dll
+C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\log4net.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\MailKit.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Microsoft.AI.Agent.Intercept.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Microsoft.AI.DependencyCollector.dll
@@ -399,6 +400,7 @@ C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Microsoft.Owin.Security.
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Microsoft.Web.Infrastructure.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Microsoft.Win32.Registry.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\MimeKit.dll
+C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Mvc.Grid.Core.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Newtonsoft.Json.Bson.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Newtonsoft.Json.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Owin.dll
@@ -421,6 +423,7 @@ C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Security.Principa
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Text.Encoding.CodePages.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Text.Encodings.Web.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Threading.Tasks.Extensions.dll
+C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.ValueTuple.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Web.Helpers.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Web.Http.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Web.Http.WebHost.dll
@@ -431,6 +434,9 @@ C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Web.WebPages.Depl
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Web.WebPages.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Web.WebPages.Razor.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\WebGrease.dll
+C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\AutoMapper.pdb
+C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\AutoMapper.xml
+C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\log4net.xml
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\MailKit.xml
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Microsoft.AspNetCore.xml
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Microsoft.AspNetCore.Antiforgery.xml
@@ -528,6 +534,7 @@ C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Microsoft.Extensions.Pri
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Microsoft.Extensions.WebEncoders.xml
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Microsoft.Net.Http.Headers.xml
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\MimeKit.xml
+C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Newtonsoft.Json.pdb
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Newtonsoft.Json.xml
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Newtonsoft.Json.Bson.xml
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\SendGrid.pdb
@@ -542,6 +549,7 @@ C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Reflection.Metada
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Text.Encodings.Web.xml
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Threading.Tasks.Extensions.xml
+C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.ValueTuple.xml
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Web.Helpers.xml
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Web.Mvc.xml
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\System.Web.Optimization.xml
@@ -576,8 +584,3 @@ C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\obj\Debug\SJIP-LIMMV1.csproj
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\obj\Debug\SJIP-LIMMV1.csproj.CopyComplete
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\obj\Debug\SJIP-LIMMV1.dll
 C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\obj\Debug\SJIP-LIMMV1.pdb
-C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\log4net.dll
-C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\log4net.xml
-C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Mvc.Grid.Core.dll
-C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\bin\Newtonsoft.Json.pdb
-C:\Users\601733\source\repos\SJIPLIMMV1\SJIP-LIMMV1\obj\Debug\SJIP-LIMMV1.csprojAssemblyReference.cache

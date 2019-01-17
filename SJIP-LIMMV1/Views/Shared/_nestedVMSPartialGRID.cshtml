@@ -1,0 +1,161 @@
+﻿@{
+    Layout = null;
+}
+@using NonFactors.Mvc.Grid;
+@model IGrid<SJIP_LIMMV1.Models.CommissionRecordVM>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/mvcgrid")
+@Styles.Render("~/Content/cssgrid")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+            new MvcGrid(element);
+        });
+
+        var elements = $("[data-id]");
+        ComRecInitiate(elements);
+
+        function ComRecInitiate(elements) {
+            $(elements).each(function (e) {
+                if ($(this).attr("data-id") != "0") {
+                    var hiddenid = $(this).attr("data-id");
+                    $(this).hide();
+                    var parent = $(this).parent().parent().prev();
+                    var buttons = $(parent).find(".togglebutton");
+                    $(buttons).each(function (e) {
+                        $(this).attr("data-hiddenid", hiddenid);
+                    });
+                };
+            });
+        };
+
+        $(".togglebutton").on("click", function () {
+            var hiddendivid = $(this).attr("data-hiddenid");
+            $(elements).each(function (e) {
+                if ($(this).attr("data-id") == hiddendivid) {
+                    $(this).slideToggle();
+                };
+            });
+        });
+
+        $(document).on('click', '.deletebutton', (function (e) {
+            //prep ajax get for modal
+            var $myDiv = $('#myComRecHistory');
+            var url = $(this).data('url');
+            $.post(url, function (data) {
+                $myDiv.html(data);
+            }).done(function () {
+                var elements = $("[data-id]");
+                ComRecInitiate(elements);
+            });
+        }));
+
+        $(document).on('click', '.editbutton', (function (e) {
+            var url = $(this).data('url');
+            window.location.href = url;
+        }));
+
+    });
+</script>
+<style>
+    #myComRecHistory {
+        margin-top: 10px !important;
+    }
+
+    .thintd {
+        padding: 0px !important;
+    }
+
+    .editbutton {
+        background-color: #8ebebc !important;
+        color: white !important;
+        border-style: none !important;
+        padding: 5px 10px 5px 10px !important;
+        margin: 0px !important;
+        border-radius: 10px 10px;
+    }
+
+    .deletebutton {
+        background-color: #f31010 !important;
+        color: white !important;
+        border-style: none !important;
+        padding: 5px 10px 5px 10px !important;
+        margin: 0px !important;
+        border-radius: 10px 10px;
+    }
+
+    .togglebutton {
+        background-color: #62de3b !important;
+        color: white !important;
+        border-style: none !important;
+        padding: 5px 10px 5px 10px !important;
+        margin: 0px !important;
+        border-radius: 10px 10px;
+    }
+</style>
+<div id="myComRecHistory">
+    <div class="row col-md-12">
+        <div id="headerdiv" class="row col-md-12">
+            <h2>Commissioned Boxes Submission History</h2>
+        </div>
+        <div class="mvc-grid row col-md-12">
+            <table>
+                <thead>
+                    <tr>
+                        @foreach (IGridColumn column in Model.Columns)
+                        {
+                            <th>
+                                <span class="mvc-grid-header-title">@column.Title</span>
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Rows.Any())
+                    {
+                        int rowid = 1;
+                        foreach (IGridRow<SJIP_LIMMV1.Models.CommissionRecordVM> row in Model.Rows)
+                        {
+                            <tr class="@row.CssClasses">
+                                @foreach (IGridColumn column in Model.Columns)
+                                {
+                                    <td class="@column.CssClasses">@column.ValueFor(row)</td>
+                                }
+                            </tr>
+
+                            if (row.Model.vms.Any())
+                            {
+                                <tr>
+                                    <td class="thintd" colspan="@Model.Columns.Count()">
+                                        @(
+                                            Html
+                                            .Grid(row.Model.vms)
+                                            .Build(columns =>
+                                            {
+                                                columns.Add(model => model.lmpdnum).Titled("LMPD #");
+                                                columns.Add(model => model.rptpostalcode).Titled("Postal Code");
+                                                columns.Add(model => model.rptcomdate).Titled("Reported Date").Formatted("{0:d}");
+                                            })
+                                        )
+                                    </td>
+                                </tr>
+                            }
+                            rowid++;
+                        }
+                    }
+                    else
+                    {
+                        <tr class="mvc-grid-empty-row">
+                            <td colspan="@Model.Columns.Count()">
+                                @Model.EmptyText
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

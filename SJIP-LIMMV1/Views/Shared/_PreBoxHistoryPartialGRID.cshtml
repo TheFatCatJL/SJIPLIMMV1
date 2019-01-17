@@ -1,0 +1,62 @@
+﻿@using NonFactors.Mvc.Grid;
+@model IEnumerable<SJIP_LIMMV1.Models.PreBoxInfoViewModel>
+@{
+    Layout = null;
+}
+
+@(Html
+        .Grid(Model)
+        .Build(columns =>
+        {
+            columns.Add(model => $"<button class=editbutton data-url=\"{Url.Action("PreBoxEdit", "BoxInfo", new { @id = model.Id })}\">Edit</button>").Encoded(false).AppendCss("buttontd");
+            columns.Add(model => model.lmpdnum).Titled("LMPD #");
+            columns.Add(model => model.simnum).Titled("Simcard #");
+            //columns.Add(model => model.jsonid).Titled("JSON ID");
+            columns.Add(model => model.telco).Titled("Telco");
+            columns.Add(model => model.checkername).Titled("Checker Name");
+            //columns.Add(model => model.techname).Titled("Tech Name");
+            columns.Add(model => model.checkdate).Titled("Check Date");
+            //columns.Add(model => model.installdate).Titled("Install Date");
+            //columns.Add(model => model.status).Titled("Status");
+            //columns.Add(model => model.history).Titled("History");
+            columns.Add(model => $"<button class=deletebutton data-url=\"{Url.Action("PreBoxDelete", "BoxInfo", new { @id = model.Id })}\">Delete</button>").Encoded(false).AppendCss("buttontd");
+        })
+        .Id("my-ajax-grid")
+        .WithSourceUrl(Url.Action("PreBoxHistoryPartial", "BoxInfo"))
+        .Empty("No data found")    
+        .Pageable(pager =>
+        {
+            pager.PagesToDisplay = 5;
+            pager.RowsPerPage = 5;
+        })
+        .Filterable()
+        .Sortable()
+        .Css("myButton")
+        .AppendCss("th")
+)
+
+<style>
+    .myButton button {
+        font-size: smaller !important;
+        padding: 5px 10px 5px 10px !important;
+        margin: 0px !important;
+        border-radius: 10px 10px;
+    }
+
+    .myButton td {
+        font-size: small !important;
+    }
+
+    .myButton th {
+        font-size: medium !important;
+    }
+
+    .buttontd {
+        font-size: small !important;
+        align-content: center !important;
+        text-align: center !important;
+    }
+</style>
+
+
+

@@ -21,7 +21,7 @@ namespace SJIP_LIMMV1.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("SecurityConnection", throwIfV1Schema: false)
         {
         }
 

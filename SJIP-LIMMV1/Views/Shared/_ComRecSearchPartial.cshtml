@@ -1,0 +1,66 @@
+﻿@model SJIP_LIMMV1.Models.CommissionRecordVM
+
+@{
+    Layout = null;
+}
+
+<style>
+    div.row {
+        padding: 5px 0px 5px 0px;
+    }
+    h3 {
+        font-weight: bold;
+    }
+    h4 {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="form-group">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Reporting Record</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.supname, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.supname, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.comrecorddate, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.comrecorddate.ToString(), new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.status, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.status, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.history, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.history, new { @class = "control-label" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            @Html.LabelFor(m => m.comment, new { @class = "control-label" })
+        </div>
+        <div class="col-md-7">
+            @Html.Label(Model.comment, new { @class = "control-label" })
+        </div>
+    </div>
+</div>
+
